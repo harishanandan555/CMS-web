@@ -1,0 +1,467 @@
+app.post('/fill-pdf', async (req, res) => {
+  try {
+    
+    const { 
+      //part1
+      USCISOnlineAcctNumber,
+      FamilyName,
+      middleName,
+      lastName,
+      countryOfBirth,
+      checkBox1,
+      AttorneyStateBarNumber,
+      Line4USCISOnlineAcctNumber,
+      Pt1Line9Yes,
+      Pt1Line9No,
+      SSN,
+      AlienNumber,
+      DateBecamePermanentResident,
+      Pt1Line2aMiddleName,
+      Pt1Line2aGivenName,
+      Pt1Line2aFamilyName,
+      Pt1Line2bMiddleName,
+      Pt1Line2bGivenName,
+      Pt1Line2bFamilyName,
+      dateOfBirth,
+      CountryOfNationality,
+      StreetNumberName,
+      Unit1,
+      Unit2,
+      Unit3,
+      AptSteFlrNumber1,
+      CityOrTown,
+      State,
+      ZipCode,
+      Pt10Line1aCheckbox,
+      Pt10Line1bCheckbox,
+      Pt10Line1bLanguage,
+      Part10Line2Checkbox,
+      NameofRepresentative,
+      Email,
+      DaytimeTelephoneNumber,
+      MobileTelephoneNumber,
+      AlienNumber1,
+      StreetNumberName2,
+      Unit1_2,
+      Unit2_2,
+
+      //part2
+      Pt10Line1a_Checkbox,
+      Pt10Line1b_Checkbox,
+      Pt10Line1b_language,
+      Part10Line2_Checkbox,
+      Pt10Line2_NameofRepresentative,
+      Pt3Line4_DaytimeTelephoneNumber3,
+      Pt3Line5_MobileTelephoneNumber3,
+      Pt3Line6_Email,
+      area3_AlienNumber2,
+      P5Line1_SignatureApplicant,
+      P5Line1_DateofSignature,
+
+      //part3
+      Pt4Line1_InterpreterGivenName,
+      Pt4Line1_InterpreterFamilyName,
+      Pt4Line2_NameofBusinessorOrgName,
+      Pt3Line3_StreetNumberName,
+      Pt3Line3_Unit0,
+      Pt3Line3_Unit1,
+      Pt3Line3_Unit2,
+      Pt3Line3_AptSteFlrNumber,
+      Pt11Line3_CityOrTown,
+      Pt3Line3_State,
+      Pt3Line3_Country,
+      Pt3Line3_ZipCode,
+      Pt3Line3_Province,
+      area4_AlienNumber3,
+      Pt4Line4_DaytimeTelephoneNumber3,
+      Pt4Line4_DaytimeTelephoneNumber31,
+      Pt4Line5_EmailAddress,
+      Pt4Line6a_NameOfLanguage,
+      Pt4Line6b_Signature,
+      Pt4Line6b_DateofSignature,
+      Pt3Line3_PostalCode,
+
+      //part4
+      Pt5Line1_PreparerGivenName,
+      Pt5Line1_PreparerFamilyName,
+      Pt5Line2_NameofBusinessorOrgName,
+      Pt12Line3_StreetNumberName,
+      Pt12Line3_Unit0,
+      Pt12Line3_Unit1,
+      Pt12Line3_Unit2,
+      Pt12Line3_AptSteFlrNumber,
+      Pt12Line3_CityOrTown,
+      Pt4Line3_Province,
+      Pt4Line3_PostalCode,
+      Pt4Line3_ZipCode,
+      Pt4Line3_State,
+      Pt4Line3_Country,
+      area5_AlienNumber4,
+      Pt5Line8_Signature,
+      Pt5Line8_DateofSignature,
+      Pt5Line6_EmailAddress,
+      Pt5Line4_PrepDaytimeTelePhoneNumber,
+      Pt5Line5_PrepMobilePhoneNumber,
+      Pt4LineCheckbox7,
+      Pt4LineCheckbox71,
+      Pt4Checkbox7b_notextends,
+      Pt4Checkbox7b_extends,
+
+      //part5
+      Pt1Line1_FamilyName1,
+      Pt1Line1_GivenName1,
+      Pt1Line1_MiddleName1,
+      AlienNumber5,
+      Pt5Line3a_PageNumber,
+      Pt5Line3b_PartNumber,
+      Pt5Line3c_ItemNumber,
+      Pt7Line3d_AdditionalInfo,
+      Pt7Line4a_PageNumber2,
+      Pt5Line4b_PartNumber,
+      Pt5Line4c_ItemNumber,
+      Pt7Line4d_AdditionalInfo2,
+      Pt7Line4a_PageNumber1,
+      Pt5Line5c_ItemNumber,
+      Pt5Line5b_PartNumber,
+      Pt7Line4d_AdditionalInfo,
+      Pt7Line4a_PageNumber,
+      Pt5Line6b_PartNumber,
+      Pt5Line6c_ItemNumber,
+
+    } = req.body.formData;
+    
+
+    let input = "pdf/n-300.pdf"
+    
+    const pdfDoc = await PDFDocument.load(await readFile(input))
+
+    let fieldNames = pdfDoc.getForm().getFields()
+
+    fieldNames = fieldNames.map((f) => f.getName())
+
+    // for (let index = 0; index < fieldNames.length; index++) {
+    //   console.log(`Index: ${index}, Field Name: ${fieldNames[index]}`);
+    // }
+
+    let form = pdfDoc.getForm()
+
+    // Part 1.  Information About You
+    form.getTextField(fieldNames[0]).setText(USCISOnlineAcctNumber);
+    form.getTextField(fieldNames[1]).setText(FamilyName);
+    form.getTextField(fieldNames[2]).setText(middleName);
+    form.getTextField(fieldNames[3]).setText(lastName);
+    form.getTextField(fieldNames[4]).setText(countryOfBirth);
+    // form.getTextField(fieldNames[5]).setText(checkBox1); //checkBox
+    form.getTextField(fieldNames[6]).setText(AttorneyStateBarNumber);
+    form.getTextField(fieldNames[7]).setText(Line4USCISOnlineAcctNumber);
+    // form.getTextField(fieldNames[8]).setText(Pt1Line9Yes); //checkBox
+    // form.getTextField(fieldNames[9]).setText(Pt1Line9No);  //checkBox
+    form.getTextField(fieldNames[10]).setText(SSN);
+    // form.getTextField(fieldNames[11]).setText(AlienNumber);
+    form.getTextField(fieldNames[12]).setText(DateBecamePermanentResident);
+    form.getTextField(fieldNames[13]).setText(Pt1Line2aMiddleName);
+    form.getTextField(fieldNames[14]).setText(Pt1Line2aGivenName);
+    form.getTextField(fieldNames[15]).setText(Pt1Line2aFamilyName);
+    form.getTextField(fieldNames[16]).setText(Pt1Line2bMiddleName);
+    form.getTextField(fieldNames[17]).setText(Pt1Line2bGivenName);
+    form.getTextField(fieldNames[18]).setText(Pt1Line2bFamilyName);
+    form.getTextField(fieldNames[19]).setText(dateOfBirth);
+    form.getTextField(fieldNames[20]).setText(CountryOfNationality);
+    form.getTextField(fieldNames[21]).setText(StreetNumberName);
+    // form.getTextField(fieldNames[22]).setText(Unit1); //checkBox
+    // form.getTextField(fieldNames[23]).setText(Unit2); //checkBox
+    // form.getTextField(fieldNames[24]).setText(Unit3); //checkBox
+    // form.getTextField(fieldNames[25]).setText(AptSteFlrNumber1);
+    form.getTextField(fieldNames[26]).setText(CityOrTown);
+    // form.getTextField(fieldNames[27]).setText(State);  //dropdwon
+    form.getTextField(fieldNames[28]).setText(ZipCode);
+    // form.getTextField(fieldNames[37]).setText(AlienNumber1);
+    form.getTextField(fieldNames[38]).setText(StreetNumberName2);
+    // form.getTextField(fieldNames[42]).setText(AptSteFlrNumber1);
+    form.getTextField(fieldNames[43]).setText(CityOrTown);
+    // form.getTextField(fieldNames[44]).setText(State); //dropdwon
+    form.getTextField(fieldNames[45]).setText(ZipCode);
+    form.getTextField(fieldNames[46]).setText(Unit2_2);
+
+    // Part 2.  Applicant's Statement, Contact Information, Declaration, Certification, and Signature
+    // form.getTextField(fieldNames[29]).setText(Pt10Line1a_Checkbox);
+    // form.getTextField(fieldNames[30]).setText(Pt10Line1b_Checkbox);
+    form.getTextField(fieldNames[31]).setText(Pt10Line1b_language);
+    // form.getTextField(fieldNames[32]).setText(Part10Line2_Checkbox);
+    form.getTextField(fieldNames[33]).setText(Pt10Line2_NameofRepresentative);
+    form.getTextField(fieldNames[35]).setText(Pt3Line4_DaytimeTelephoneNumber3);
+    form.getTextField(fieldNames[36]).setText(Pt3Line5_MobileTelephoneNumber3);
+    form.getTextField(fieldNames[34]).setText(Pt3Line6_Email);
+    // form.getTextField(fieldNames[52]).setText(AlienNumber);
+    form.getTextField(fieldNames[47]).setText(P5Line1_SignatureApplicant);
+    form.getTextField(fieldNames[48]).setText(P5Line1_DateofSignature);
+
+
+    // Part 3.  Interpreter's Contact Information, Certification, and Signature
+    form.getTextField("form1[0].#subform[2].Pt4Line1_InterpreterGivenName[0]").setText(Pt4Line1_InterpreterGivenName);
+    form.getTextField("form1[0].#subform[2].Pt4Line1_InterpreterFamilyName[0]").setText(Pt4Line1_InterpreterFamilyName);
+    form.getTextField("form1[0].#subform[2].Pt4Line2_NameofBusinessorOrgName[0]").setText(Pt4Line2_NameofBusinessorOrgName);
+    form.getTextField("form1[0].#subform[2].Pt3Line3_StreetNumberName[0]").setText(Pt3Line3_StreetNumberName);
+    // form.getTextField("form1[0].#subform[2].Pt3Line3_Unit[0]").setText(Pt3Line3_Unit0);
+    // form.getTextField("form1[0].#subform[2].Pt3Line3_Unit[1]").setText(Pt3Line3_Unit1);
+    // form.getTextField("form1[0].#subform[2].Pt3Line3_Unit[2]").setText(Pt3Line3_Unit2);
+    // form.getTextField("form1[0].#subform[2].Pt3Line3_AptSteFlrNumber[0]").setText(Pt3Line3_AptSteFlrNumber);
+    form.getTextField("form1[0].#subform[2].Pt11Line3_CityOrTown[0]").setText(Pt11Line3_CityOrTown);
+    // form.getTextField("form1[0].#subform[2].Pt3Line3_State[0]").setText(Pt3Line3_State);
+    form.getTextField("form1[0].#subform[2].Pt3Line3_Country[0]").setText(Pt3Line3_Country);
+    // form.getTextField("form1[0].#subform[2].Pt3Line3_ZipCode[0]").setText(Pt3Line3_ZipCode);
+    form.getTextField("form1[0].#subform[2].Pt3Line3_Province[0]").setText(Pt3Line3_Province);
+    form.getTextField("form1[0].#subform[2].Pt3Line3_PostalCode[0]").setText(Pt3Line3_PostalCode);
+    form.getTextField("form1[0].#subform[4].#area[4].AlienNumber[3]").setText(area4_AlienNumber3);
+    form.getTextField("form1[0].#subform[4].Pt4Line4_DaytimeTelephoneNumber3[0]").setText(Pt4Line4_DaytimeTelephoneNumber3);
+    form.getTextField("form1[0].#subform[4].Pt4Line4_DaytimeTelephoneNumber3[1]").setText(Pt4Line4_DaytimeTelephoneNumber31);
+    form.getTextField("form1[0].#subform[4].Pt4Line5_EmailAddress[0]").setText(Pt4Line5_EmailAddress);
+    form.getTextField("form1[0].#subform[4].Pt4Line6a_NameOfLanguage[0]").setText(Pt4Line6a_NameOfLanguage);
+    // form.getTextField("form1[0].#subform[4].Pt4Line6b_Signature[0]").setText(Pt4Line6b_Signature);
+    form.getTextField("form1[0].#subform[4].Pt4Line6b_DateofSignature[0]").setText(Pt4Line6b_DateofSignature);
+
+
+    // Part 4.  Contact Information, Declaration, and Signature of the Person Preparing this Application, if Other Than the Applicant
+    form.getTextField(fieldNames[68]).setText(Pt5Line1_PreparerGivenName);
+    form.getTextField(fieldNames[69]).setText(Pt5Line1_PreparerFamilyName);
+    form.getTextField(fieldNames[70]).setText(Pt5Line2_NameofBusinessorOrgName);
+    form.getTextField(fieldNames[79]).setText(Pt12Line3_StreetNumberName);
+    // form.getTextField(fieldNames[80]).setText(Pt12Line3_Unit0);
+    // form.getTextField(fieldNames[81]).setText(Pt12Line3_Unit1);
+    // form.getTextField(fieldNames[82]).setText(Pt12Line3_AptSteFlrNumber);
+    // form.getTextField(fieldNames[83]).setText(Pt12Line3_Unit2);
+    form.getTextField(fieldNames[74]).setText(Pt12Line3_CityOrTown);
+    form.getTextField(fieldNames[75]).setText(Pt4Line3_Province);
+    form.getTextField(fieldNames[76]).setText(Pt4Line3_PostalCode);
+    // form.getTextField(fieldNames[77]).setText(Pt4Line3_ZipCode);
+    // form.getTextField(fieldNames[78]).setText(Pt4Line3_State);
+    form.getTextField(fieldNames[84]).setText(Pt4Line3_Country);
+    form.getTextField(fieldNames[85]).setText(area5_AlienNumber4);
+    form.getTextField(fieldNames[90]).setText(Pt5Line8_Signature);
+    form.getTextField(fieldNames[91]).setText(Pt5Line8_DateofSignature);
+    form.getTextField(fieldNames[92]).setText(Pt5Line6_EmailAddress);
+    form.getTextField(fieldNames[93]).setText(Pt5Line4_PrepDaytimeTelePhoneNumber);
+    form.getTextField(fieldNames[94]).setText(Pt5Line5_PrepMobilePhoneNumber);
+    // form.getTextField(fieldNames[86]).setText(Pt4LineCheckbox7);
+    // form.getTextField(fieldNames[87]).setText(Pt4LineCheckbox71);
+    // form.getTextField(fieldNames[88]).setText(Pt4Checkbox7b_notextends);
+    // form.getTextField(fieldNames[89]).setText(Pt4Checkbox7b_extends);
+
+
+    // Part 5.  Additional Information
+    form.getTextField(fieldNames[111]).setText(Pt1Line1_FamilyName1);
+    form.getTextField(fieldNames[112]).setText(Pt1Line1_GivenName1);
+    form.getTextField(fieldNames[113]).setText(Pt1Line1_MiddleName1);
+    form.getTextField(fieldNames[114]).setText(AlienNumber5);
+    // form.getTextField(fieldNames[96]).setText(Pt5Line3a_PageNumber);
+    // form.getTextField(fieldNames[97]).setText(Pt5Line3b_PartNumber);
+    // form.getTextField(fieldNames[98]).setText(Pt5Line3c_ItemNumber);
+    form.getTextField(fieldNames[99]).setText(Pt7Line3d_AdditionalInfo);
+    // form.getTextField(fieldNames[107]).setText(Pt7Line4a_PageNumber2);
+    // form.getTextField(fieldNames[108]).setText(Pt5Line4b_PartNumber);
+    // form.getTextField(fieldNames[109]).setText(Pt5Line4c_ItemNumber);
+    form.getTextField(fieldNames[110]).setText(Pt7Line4d_AdditionalInfo2);
+    // form.getTextField(fieldNames[106]).setText(Pt7Line4a_PageNumber1);
+    // form.getTextField(fieldNames[104]).setText(Pt5Line5c_ItemNumber);
+    // form.getTextField(fieldNames[105]).setText(Pt5Line5b_PartNumber);
+    form.getTextField(fieldNames[95]).setText(Pt7Line4d_AdditionalInfo);
+    // form.getTextField(fieldNames[100]).setText(Pt7Line4a_PageNumber);
+    // form.getTextField(fieldNames[101]).setText(Pt5Line6b_PartNumber);
+    // form.getTextField(fieldNames[102]).setText(Pt5Line6c_ItemNumber);
+    
+    const pdfBytes = await pdfDoc.save()
+
+    // console.log('PDF created at:', pdfBytes);
+
+    // await writeFile(output, pdfBytes)
+
+    // console.log('PDF created at:', output);
+
+    // // Send the path to the frontend
+    // res.json({});
+
+    // console.log("output: ", output)
+
+    // res.json({ success: true, pdf: pdfBytes });
+
+
+    // Define the output path in the Downloads folder
+    const downloadsFolder = path.join(os.homedir(), 'Downloads');
+    const outputPath = path.join(downloadsFolder, 'filled_form.pdf');
+
+    // Write the PDF file to the Downloads folder
+    await writeFile(outputPath, pdfBytes);
+
+    console.log('PDF created at:', outputPath);
+
+    const fileUrl = `file://${outputPath}`;
+    // Send the output path to the frontend
+    res.json({ outputPath, fileUrl });
+
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <div className='form-wizard-header overflow-x-auto scroll-sm pb-8 my-32'>
+
+                <ul className='list-unstyled form-wizard-list'>
+
+                  <li
+                    className={`form-wizard-list__item
+                    ${[2, 3, 4, 5, 6, 7, 8, 9, 10].includes(currentStep) && "activated"}
+                    ${currentStep === 1 && "active"} `}
+                  >
+                    <div className='form-wizard-list__line'>
+                      <span className='count'>1</span>
+                    </div>
+
+                    <span className='text text-xs fw-semibold'>
+                      Personal Info{" "}
+                    </span>
+
+                  </li>
+
+                  <li
+                    className={`form-wizard-list__item
+                    ${[3, 4, 5, 6, 7, 8, 9, 10].includes(currentStep) && "activated"}
+                    ${currentStep === 2 && "active"} `}
+                  >
+                    <div className='form-wizard-list__line'>
+                      <span className='count'>2</span>
+                    </div>
+
+                    <span className='text text-xs fw-semibold'>
+                      Family Info{" "}
+                    </span>
+
+                  </li>
+
+                  <li
+                    className={`form-wizard-list__item
+                    ${[4, 5, 6, 7, 8, 9, 10].includes(currentStep) && "activated"}
+                    ${currentStep === 3 && "active"} `}
+                  >
+                    <div className='form-wizard-list__line'>
+                      <span className='count'>3</span>
+                    </div>
+
+                    <span className='text text-xs fw-semibold'>
+                      Aliases
+                    </span>
+
+                  </li>
+
+                  <li
+                    className={`form-wizard-list__item
+                      ${[5, 6, 7, 8, 9, 10].includes(currentStep) && "activated"}
+                    ${currentStep === 4 && "active"} `}
+                  >
+                    <div className='form-wizard-list__line'>
+                      <span className='count'>4</span>
+                    </div>
+                    <span className='text text-xs fw-semibold'>
+                      Alien Info
+                    </span>
+                  </li>
+
+                  <li
+                    className={`form-wizard-list__item
+                      ${[6, 7, 8, 9, 10].includes(currentStep) && "activated"}
+                    ${currentStep === 5 && "active"} `}
+                  >
+                    <div className='form-wizard-list__line'>
+                      <span className='count'>5</span>
+                    </div>
+                    <span className='text text-xs fw-semibold'>
+                      Requester Info
+                    </span>
+                  </li>
+
+                  <li
+                    className={`form-wizard-list__item
+                      ${[7, 8, 9, 10].includes(currentStep) && "activated"}
+                    ${currentStep === 6 && "active"} `}
+                  >
+                    <div className='form-wizard-list__line'>
+                      <span className='count'>6</span>
+                    </div>
+                    <span className='text text-xs fw-semibold'>
+                      Receipt Info
+                    </span>
+                  </li>
+
+                  <li 
+                    className={`form-wizard-list__item
+                    ${[8, 9, 10].includes(currentStep) && "activated"}
+                    ${currentStep === 7 && "active"} `}
+                  >
+                    <div className='form-wizard-list__line'>
+                      <span className='count'>7</span>
+                    </div>
+                    <span className='text text-xs fw-semibold'>
+                      Court Proceedings
+                    </span>
+                  </li>
+
+                  <li
+                    className={`form-wizard-list__item
+                      ${[9, 10].includes(currentStep) && "activated"}
+                    ${currentStep === 8 && "active"} `}
+                  >
+                    <div className='form-wizard-list__line'>
+                      <span className='count'>8</span>
+                    </div>
+                    <span className='text text-xs fw-semibold'>
+                      Document Info
+                    </span>
+                  </li>
+
+                  <li
+                    className={`form-wizard-list__item
+                      ${[10].includes(currentStep) && "activated"}
+                    ${currentStep === 9 && "active"} `}
+                  >
+                    <div className='form-wizard-list__line'>
+                      <span className='count'>9</span>
+                    </div>
+                    <span className='text text-xs fw-semibold'>
+                      Additional Sections
+                    </span>
+                  </li>
+
+                  <li
+                    className={`form-wizard-list__item
+
+                    ${currentStep === 10 && "activated"} `}
+                  >
+                    <div className='form-wizard-list__line'>
+                      <span className='count'>10</span>
+                    </div>
+                    <span className='text text-xs fw-semibold'>Completed</span>
+                  </li>
+
+                </ul>
+
+              </div>
