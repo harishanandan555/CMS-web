@@ -33,7 +33,9 @@ function App() {
         <Route exact path='/' element={<SignInPage />} />
         <Route exact path='/index-1' element={<HomePageTwo />} />
         <Route exact path='/index-2' element={<HomePageOne />} />
+        
         <Route path="/wizardstepper" element={<WizardUser />}>
+        <Route exact path='/wizardstepper/add-user' element={<AddUserPage/>} /> 
           <Route path="add-user" element={<AddUserPage />} />
           <Route path="otp" element={<OTPUserPage />} />
           <Route path="email" element={<EmailUserPage />} />

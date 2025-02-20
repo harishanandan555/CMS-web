@@ -121,7 +121,7 @@ const DistributorPageLayer = () => {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h4>Distributor List</h4>
         <Link
-          to="/wizardstepper"
+          to="/wizardstepper/add-user"
           className="btn btn-primary d-flex align-items-center gap-2"
         >
           <Icon icon="ic:baseline-plus" />
