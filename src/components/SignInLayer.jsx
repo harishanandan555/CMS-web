@@ -1,120 +1,139 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { useNavigate } from 'react-router-dom';
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Icon } from "@iconify/react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 const SignInLayer = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate('/index-1'); // Specify the target path for navigation
+  useEffect(() => {
+    // Retrieve saved email if "Remember me" was checked
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
+
+  
+  const handleSignIn = async (e) => {
+    e.preventDefault();  // Prevent form default behavior
+    try {
+      const response = await axios.post(
+        "http://localhost:1337/v1/superadmin/cms/login",
+        { login_email: email, password, login_role: "superadmin" }
+      );
+      console.log(response.data);
+
+      // Save the token in localStorage
+      if (response.data.token) {
+        localStorage.setItem('user_token', response.data.token);
+      }
+
+      // Store email if rememberMe is checked
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
+
+      // Navigate to the Dashboard screen after login
+      
+        navigate('/index-1'); // Specify the target path for navigation
+     // Adjust this to your Dashboard route
+
+    } catch (error) {
+      console.error("Login failed:", error.response?.data || error.message);
+    }
+  };
+
+  
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
   };
 
   return (
-    <section className='auth bg-base d-flex flex-wrap'>
-      <div className='auth-left d-lg-block d-none'>
-        <div className='d-flex align-items-center flex-column h-100 justify-content-center'>
-          <img src='assets/images/auth/auth-img.png' alt='' />
+    <section className="auth bg-base d-flex flex-wrap">
+      <div className="auth-left d-lg-block d-none">
+        <div className="d-flex align-items-center flex-column h-100 justify-content-center">
+          <img src="assets/images/auth/auth-img.png" alt="Auth" />
         </div>
       </div>
-      <div className='auth-right py-32 px-24 d-flex flex-column justify-content-center'>
-        <div className='max-w-464-px mx-auto w-100'>
+      <div className="auth-right py-32 px-24 d-flex flex-column justify-content-center">
+        <div className="max-w-464-px mx-auto w-100">
           <div>
-            <Link to='/index-2' className='mb-40 max-w-290-px'>
-              <img src='assets/images/logo.png' alt='' />
+            <Link to="/index-2" className="mb-40 max-w-290-px">
+              <img src="assets/images/logo.png" alt="Logo" />
             </Link>
-            <h4 className='mb-12'>Sign In to your Account</h4>
-            <p className='mb-32 text-secondary-light text-lg'>
-              Welcome back! please enter your detail
+            <h4 className="mb-12">Sign In to your Account</h4>
+            <p className="mb-32 text-secondary-light text-lg">
+              Welcome back! Please enter your details
             </p>
           </div>
-          <form action='#'>
-            <div className='icon-field mb-16'>
-              <span className='icon top-50 translate-middle-y'>
-                <Icon icon='mage:email' />
+          <form onSubmit={handleSignIn}>
+            <div className="icon-field mb-16">
+              <span className="icon top-50 translate-middle-y">
+                <Icon icon="mage:email" />
               </span>
               <input
-                type='email'
-                className='form-control h-56-px bg-neutral-50 radius-12'
-                placeholder='Email'
+                type="email"
+                className="form-control h-56-px bg-neutral-50 radius-12"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
-            <div className='position-relative mb-20'>
-              <div className='icon-field'>
-                <span className='icon top-50 translate-middle-y'>
-                  <Icon icon='solar:lock-password-outline' />
+            <div className="position-relative mb-20">
+              <div className="icon-field">
+                <span className="icon top-50 translate-middle-y">
+                  <Icon icon="solar:lock-password-outline" />
                 </span>
                 <input
-                  type='password'
-                  className='form-control h-56-px bg-neutral-50 radius-12'
-                  id='your-password'
-                  placeholder='Password'
+                  type={passwordVisible ? "text" : "password"}
+                  className="form-control h-56-px bg-neutral-50 radius-12"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
               </div>
               <span
-                className='toggle-password ri-eye-line cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light'
-                data-toggle='#your-password'
-              />
+                className="toggle-password ri-eye-line cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light"
+                onClick={togglePasswordVisibility}
+              >
+                <Icon icon={passwordVisible ? "ri:eye-off-line" : "ri:eye-line"} />
+              </span>
             </div>
-            <div className=''>
-              <div className='d-flex justify-content-between gap-2'>
-                <div className='form-check style-check d-flex align-items-center'>
-                  <input
-                    className='form-check-input border border-neutral-300'
-                    type='checkbox'
-                    defaultValue=''
-                    id='remeber'
-                  />
-                  <label className='form-check-label' htmlFor='remeber'>
-                    Remember me{" "}
-                  </label>
-                </div>
-                <Link to='#' className='text-primary-600 fw-medium'>
-                  Forgot Password?
-                </Link>
+            <div className="d-flex justify-content-between gap-2">
+              <div className="form-check style-check d-flex align-items-center">
+                <input
+                  className="form-check-input border border-neutral-300"
+                  type="checkbox"
+                  id="remember"
+                  checked={rememberMe}
+                  onChange={() => setRememberMe(!rememberMe)}
+                />
+                <label className="form-check-label" htmlFor="remember">
+                  Remember me
+                </label>
               </div>
+              <Link to="#" className="text-primary-600 fw-medium">
+                Forgot Password?
+              </Link>
             </div>
             <button
-              onClick={handleClick}
-              type='submit'
-              className='btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-32'
+              type="submit"
+              className="btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-32"
             >
-              {" "}
               Sign In
             </button>
-            <div className='mt-32 center-border-horizontal text-center'>
-              <span className='bg-base z-1 px-4'>Or sign in with</span>
-            </div>
-            <div className='mt-32 d-flex align-items-center gap-3'>
-              <button
-                type='button'
-                className='fw-semibold text-primary-light py-16 px-24 w-50 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50'
-              >
-                <Icon
-                  icon='ic:baseline-facebook'
-                  className='text-primary-600 text-xl line-height-1'
-                />
-                Google
-              </button>
-              <button
-                type='button'
-                className='fw-semibold text-primary-light py-16 px-24 w-50 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50'
-              >
-                <Icon
-                  icon='logos:google-icon'
-                  className='text-primary-600 text-xl line-height-1'
-                />
-                Google
-              </button>
-            </div>
-            <div className='mt-32 text-center text-sm'>
-              <p className='mb-0'>
-                Don’t have an account?{" "}
-                <Link to='/sign-up' className='text-primary-600 fw-semibold'>
-                  Sign Up
-                </Link>
-              </p>
-            </div>
           </form>
         </div>
       </div>

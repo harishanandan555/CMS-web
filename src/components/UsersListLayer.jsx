@@ -1,298 +1,334 @@
+import React, { useEffect, useState } from 'react';
 import { Icon } from '@iconify/react/dist/iconify.js';
-import React from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import Modal from 'react-modal';
+import { FiEye } from "react-icons/fi";
+import {ProgressBar} from 'react-loader-spinner';
 
 const UsersListLayer = () => {
+  const [clientList, setClientList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [messageText, setMessageText] = useState('');
+  const [isRefresh, setIsRefresh] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(50); // Set 50 items per page
+
+  const loadClientList = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('user_token');
+      if (!token) {
+        setMessageText('Token not found. Please log in again.');
+        setIsRefresh(true);
+        setLoading(false);
+        return;
+      }
+
+      console.log("Token", token);
+      const config = { headers: { 'bb-access-token': token } };
+      const res = await axios.get(
+        'http://localhost:1337/v1/superadmin/cms/admin/clientlist',
+        config
+      );
+      console.log("result in client", res);
+      if (res.data && res.data.result) {
+        const mappedData = res.data.result.map((client) => ({
+          email: client.login_email || 'N/A',
+          phone: client.login_mobile_number || 'N/A',
+          status: client.login_status || 'N/A',
+          stage: client.login_stage || 'N/A',
+          kycVerified: client.login_kyc_verified ? 'Yes' : 'No',
+          esignVerified: client.login_esign_verified ? 'Yes' : 'No',
+          bseClientCodeVerified: client.login_bse_clientcode_verified ? 'Yes' : 'No',
+          photoVerified: client.login_bse_photo_verified ? 'Yes' : 'No',
+          fullClientData: client,
+        }));
+        setClientList(mappedData);
+      } else {
+        setMessageText('No client data found.');
+        setIsRefresh(true);
+      }
+    } catch (err) {
+      setMessageText('Failed to load client data.');
+      setIsRefresh(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openModal = (client) => {
+    setSelectedClient(client);
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setSelectedClient(null);
+  };
+
+  useEffect(() => {
+    loadClientList();
+  }, []);
+
+  // Implement loader when loading is true
+  if (loading) {
     return (
-        <div className="card h-100 p-0 radius-12">
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh'
+        }}
+      >
+        <ProgressBar
+  visible={true}
+  height="80"
+  width="180"
+  color="#4fa94d"
+  ariaLabel="progress-bar-loading"
+  wrapperStyle={{}}
+  wrapperClass=""
+  />
+      </div>
+    );
+  }
 
-            <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
-                <div className="d-flex align-items-center flex-wrap gap-3">
-                    <span className="text-md fw-medium text-secondary-light mb-0">Show</span>
-                    <select className="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" defaultValue="Select Number">
-                        <option value="Select Number" disabled>
-                            Select Number
-                        </option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                    </select>
-                    <form className="navbar-search">
-                        <input
-                            type="text"
-                            className="bg-base h-40-px w-auto"
-                            name="search"
-                            placeholder="Search"
-                        />
-                        <Icon icon="ion:search-outline" className="icon" />
-                    </form>
-                    <select className="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" defaultValue="Select Status">
-                        <option value="Select Status" disabled>
-                            Select Status
-                        </option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                    </select>
-                </div>
-                <Link
-                    to="/add-user"
-                    className="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
-                >
-                    <Icon
-                        icon="ic:baseline-plus"
-                        className="icon text-xl line-height-1"
-                    />
-                    Add New User
-                </Link>
-            </div>
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentClients = clientList.slice(indexOfFirstItem, indexOfLastItem);
 
-            <div className="card-body p-24">
-                <div className="table-responsive scroll-sm">
-                    <table className="table bordered-table sm-table mb-0">
-                        <thead>
-                            <tr>
-                                <th scope="col">
-                                    <div className="d-flex align-items-center gap-10">
-                                        <div className="form-check style-check d-flex align-items-center">
-                                            <input
-                                                className="form-check-input radius-4 border input-form-dark"
-                                                type="checkbox"
-                                                name="checkbox"
-                                                id="selectAll"
-                                            />
-                                        </div>
-                                        S.L
-                                    </div>
-                                </th>
-                                <th scope="col">Join Date</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Department</th>
-                                <th scope="col">Designation</th>
-                                <th scope="col" className="text-center">
-                                    Status
-                                </th>
-                                <th scope="col" className="text-center">
-                                    Action
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <div className="d-flex align-items-center gap-10">
-                                        <div className="form-check style-check d-flex align-items-center">
-                                            <input
-                                                className="form-check-input radius-4 border border-neutral-400"
-                                                type="checkbox"
-                                                name="checkbox"
-                                            />
-                                        </div>
-                                        01
-                                    </div>
-                                </td>
-                                <td>25 Jan 2024</td>
-                                <td>
-                                    <div className="d-flex align-items-center">
-                                        <img
-                                            src="assets/images/user-list/user-list1.png"
-                                            alt="Wowdash"
-                                            className="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden"
-                                        />
-                                        <div className="flex-grow-1">
-                                            <span className="text-md mb-0 fw-normal text-secondary-light">
-                                                Kathryn Murphy
-                                            </span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span className="text-md mb-0 fw-normal text-secondary-light">
-                                        osgoodwy@gmail.com
-                                    </span>
-                                </td>
-                                <td>HR</td>
-                                <td>Manager</td>
-                                <td className="text-center">
-                                    <span className="bg-success-focus text-success-600 border border-success-main px-24 py-4 radius-4 fw-medium text-sm">
-                                        Active
-                                    </span>
-                                </td>
-                                <td className="text-center">
-                                    <div className="d-flex align-items-center gap-10 justify-content-center">
-                                        <button
-                                            type="button"
-                                            className="bg-info-focus bg-hover-info-200 text-info-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
-                                        >
-                                            <Icon
-                                                icon="majesticons:eye-line"
-                                                className="icon text-xl"
-                                            />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
-                                        >
-                                            <Icon icon="lucide:edit" className="menu-icon" />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="remove-item-btn bg-danger-focus bg-hover-danger-200 text-danger-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
-                                        >
-                                            <Icon
-                                                icon="fluent:delete-24-regular"
-                                                className="menu-icon"
-                                            />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div className="d-flex align-items-center gap-10">
-                                        <div className="form-check style-check d-flex align-items-center">
-                                            <input
-                                                className="form-check-input radius-4 border border-neutral-400"
-                                                type="checkbox"
-                                                name="checkbox"
-                                            />
-                                        </div>
-                                        02
-                                    </div>
-                                </td>
-                                <td>25 Jan 2024</td>
-                                <td>
-                                    <div className="d-flex align-items-center">
-                                        <img
-                                            src="assets/images/user-list/user-list2.png"
-                                            alt="Wowdash"
-                                            className="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden"
-                                        />
-                                        <div className="flex-grow-1">
-                                            <span className="text-md mb-0 fw-normal text-secondary-light">
-                                                Annette Black
-                                            </span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span className="text-md mb-0 fw-normal text-secondary-light">
-                                        redaniel@gmail.com
-                                    </span>
-                                </td>
-                                <td>Design</td>
-                                <td>UI UX Designer</td>
-                                <td className="text-center">
-                                    <span className="bg-neutral-200 text-neutral-600 border border-neutral-400 px-24 py-4 radius-4 fw-medium text-sm">
-                                        Inactive
-                                    </span>
-                                </td>
-                                <td className="text-center">
-                                    <div className="d-flex align-items-center gap-10 justify-content-center">
-                                        <button
-                                            type="button"
-                                            className="bg-info-focus bg-hover-info-200 text-info-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
-                                        >
-                                            <Icon
-                                                icon="majesticons:eye-line"
-                                                className="icon text-xl"
-                                            />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
-                                        >
-                                            <Icon icon="lucide:edit" className="menu-icon" />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="remove-item-btn bg-danger-focus bg-hover-danger-200 text-danger-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
-                                        >
-                                            <Icon
-                                                icon="fluent:delete-24-regular"
-                                                className="menu-icon"
-                                            />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
-                    <span>Showing 1 to 10 of 12 entries</span>
-                    <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
-                        <li className="page-item">
-                            <Link
-                                className="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px  text-md"
-                                to="#"
-                            >
-                                <Icon icon="ep:d-arrow-left" className="" />
-                            </Link>
-                        </li>
-                        <li className="page-item">
-                            <Link
-                                className="page-link text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md bg-primary-600 text-white"
-                                to="#"
-                            >
-                                1
-                            </Link>
-                        </li>
-                        <li className="page-item">
-                            <Link
-                                className="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px"
-                                to="#"
-                            >
-                                2
-                            </Link>
-                        </li>
-                        <li className="page-item">
-                            <Link
-                                className="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md"
-                                to="#"
-                            >
-                                3
-                            </Link>
-                        </li>
-                        <li className="page-item">
-                            <Link
-                                className="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md"
-                                to="#"
-                            >
-                                4
-                            </Link>
-                        </li>
-                        <li className="page-item">
-                            <Link
-                                className="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md"
-                                to="#"
-                            >
-                                5
-                            </Link>
-                        </li>
-                        <li className="page-item">
-                            <Link
-                                className="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px  text-md"
-                                to="#"
-                            >
-                                {" "}
-                                <Icon icon="ep:d-arrow-right" className="" />{" "}
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+  const totalPages = Math.ceil(clientList.length / itemsPerPage);
 
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  return (
+    <div className="container">
+      {/* Header Section */}
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h4>Client List</h4>
+        <Link
+          to="/add-user"
+          className="btn btn-primary d-flex align-items-center gap-2"
+        >
+          <Icon icon="ic:baseline-plus" />
+          Add New User
+        </Link>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="d-flex align-items-center gap-3 mb-3">
+        <select className="form-select">
+          <option disabled>Select Number</option>
+          {[...Array(10).keys()].map((num) => (
+            <option key={num} value={num + 1}>
+              {num + 1}
+            </option>
+          ))}
+        </select>
+        <input
+          type="text"
+          className="form-control w-25"
+          placeholder="Search"
+        />
+        <Icon icon="ion:search-outline" className="icon" />
+        <select className="form-select">
+          <option disabled>Select Status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+
+      {/* Table Section */}
+      <div className="table-responsive">
+        <table className="table table-bordered">
+          <thead className="thead-light">
+            <tr>
+              <th>S. No</th>
+              <th>Phone</th>
+              <th>Status</th>
+              <th>Stage</th>
+              <th>KYC Verified</th>
+              <th>Esign Verified</th>
+              <th>BSE Client Code Verified</th>
+              <th>Photo Verified</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentClients.map((client, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{client.phone || 'N/A'}</td>
+                <td>
+                  <span
+                    className={`badge ${
+                      client.status === 'Active'
+                        ? 'bg-success'
+                        : client.status === 'Inactive'
+                          ? 'bg-secondary'
+                          : 'bg-warning'
+                    }`}
+                  >
+                    {client.status || 'N/A'}
+                  </span>
+                </td>
+                <td>{client.stage || 'N/A'}</td>
+                <td>{client.kycVerified}</td>
+                <td>{client.esignVerified}</td>
+                <td>{client.bseClientCodeVerified}</td>
+                <td>{client.photoVerified}</td>
+                <td>
+                  <div className="d-flex justify-content-center align-items-center gap-2">
+                    {/* View Icon */}
+                    <button
+                      className="btn btn-light rounded-circle"
+                      onClick={() => openModal(client)}
+                      style={{
+                        backgroundColor: 'rgba(173, 216, 230, 0.3)',
+                        padding: '10px',
+                        border: 'none',
+                      }}
+                    >
+                      <FiEye style={{ color: '#4682B4', fontSize: '18px' }} />
+                    </button>
+
+                    {/* Edit Icon */}
+                    <button
+                      className="btn btn-light rounded-circle"
+                      style={{
+                        backgroundColor: 'rgba(144, 238, 144, 0.3)',
+                        padding: '10px',
+                        border: 'none',
+                      }}
+                    >
+                      <Icon
+                        icon="mdi:pencil-outline"
+                        style={{ color: '#32CD32', fontSize: '18px' }}
+                      />
+                    </button>
+
+                    {/* Delete Icon - Uncomment if needed */}
+                    {/* <button
+                      className="btn btn-light rounded-circle"
+                      style={{
+                        backgroundColor: 'rgba(255, 182, 193, 0.3)',
+                        padding: '10px',
+                        border: 'none',
+                      }}
+                    >
+                      <Icon
+                        icon="mdi:delete-outline"
+                        style={{ color: '#FF4500', fontSize: '18px' }}
+                      />
+                    </button> */}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination Section */}
+      <div className="d-flex justify-content-between align-items-center mt-3">
+        <button
+          className="btn btn-light"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          style={{ padding: '5px 15px', border: '1px solid #ddd' }}
+        >
+          Previous
+        </button>
+
+        <div className="d-flex align-items-center gap-3">
+          <span
+            style={{
+              display: 'inline-block',
+              padding: '5px 15px',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+              backgroundColor: '#f8f9fa',
+              fontSize: '14px',
+            }}
+          >
+            Page {currentPage} of {totalPages}
+          </span>
         </div>
 
-    );
+        <button
+          className="btn btn-light"
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+          style={{ padding: '5px 15px', border: '1px solid #ddd' }}
+        >
+          Next
+        </button>
+      </div>
+
+      {/* Modal Section */}
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Client Details Modal"
+        style={{
+          content: {
+            width: '700px',
+            height: '300px',
+            margin: 'auto',
+            backgroundColor: '#fff',
+            borderRadius: '8px',
+            padding: '20px',
+            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1000,
+          },
+          overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }
+        }}
+      >
+        <div className="modal-header">
+          <h5>Client Details</h5>
+          <button onClick={closeModal} className="btn-close"></button>
+        </div>
+        <div className="modal-body">
+          {selectedClient && (
+            <>
+              <p>
+                <strong>Email:</strong> {selectedClient.email}
+              </p>
+              <p>
+                <strong>Address:</strong> {selectedClient.fullClientData.login_personal_information.address_information.address}
+              </p>
+              <p>
+                <strong>Income:</strong> {selectedClient.fullClientData.login_personal_information.annual_income_text || 'N/A'}
+              </p>
+              <p>
+                <strong>bse_fatca_verified:</strong> {selectedClient.fullClientData.login_bse_fatca_verified || 'N/A'}
+              </p>
+              <p>
+                <strong>BSE Client Code Verified:</strong> {selectedClient.bseClientCodeVerified}
+              </p>
+              <p>
+                <strong>Photo Verified:</strong> {selectedClient.photoVerified}
+              </p>
+            </>
+          )}
+        </div>
+      </Modal>
+    </div>
+  );
 };
 
 export default UsersListLayer;

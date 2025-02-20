@@ -155,24 +155,25 @@ const MasterLayout = ({ children }) => {
             </li>
 
             <li>
-              <NavLink
-                to='/users-list'
-                className={(navData) => (navData.isActive ? "active-page" : "")}
-              >
-                <Icon icon='flowbite:users-group-outline' className='menu-icon' />
-                <span>User</span>
-              </NavLink>
-            </li>
+  <NavLink to="/users-list" className={(navData) => (navData.isActive ? "active-page" : "")}>
+    <Icon icon="fluent:people-team-20-regular" className="menu-icon" />
+    <span>Client List</span>
+  </NavLink>
+</li>
 
-            <li>
-              <NavLink
-                to='/wizard'
-                className={(navData) => (navData.isActive ? "active-page" : "")}
-              >
-                <Icon icon='heroicons:document' className='menu-icon' />
-                <span>Forms</span>
-              </NavLink>
-            </li>
+<li>
+  <NavLink to="/distributor" className={(navData) => (navData.isActive ? "active-page" : "")}>
+    <Icon icon="mdi:account-group-outline" className="menu-icon" />
+    <span>Distributor List</span>
+  </NavLink>
+</li>
+
+<li>
+  <NavLink to="/advisor" className={(navData) => (navData.isActive ? "active-page" : "")}>
+    <Icon icon="ic:round-supervisor-account" className="menu-icon" />
+    <span>Advisor List</span>
+  </NavLink>
+</li>
 
           </ul>
         </div>
@@ -221,7 +222,7 @@ const MasterLayout = ({ children }) => {
               <div className='d-flex flex-wrap align-items-center gap-3'>
 
                 {/* ThemeToggleButton */}
-                <ThemeToggleButton />
+               
                 <div className='dropdown d-none d-sm-inline-block'>
                   <button
                     className='has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center'

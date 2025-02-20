@@ -618,7 +618,29 @@ textarea {
   -webkit-appearance: button;
   font: inherit;
 }
+[data-theme="light"] table {
+  background-color: var(--neutral-50, #ffffff);
+  color: var(--neutral-900, #000000);
+  border-collapse: collapse;
+}
 
+[data-theme="light"] th, 
+[data-theme="light"] td {
+  border: 1px solid var(--neutral-200, #cccccc);
+  padding: 8px;
+}
+
+/* Dark Theme */
+[data-theme="dark"] table {
+  background-color: var(--neutral-900, #1a1a1a);
+  color: var(--neutral-50, #ffffff);
+}
+
+[data-theme="dark"] th, 
+[data-theme="dark"] td {
+  border: 1px solid var(--neutral-700, #444444);
+  padding: 8px;
+}
 [type="number"] {
   -moz-appearance: textfield;
 }
