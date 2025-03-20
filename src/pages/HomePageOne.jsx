@@ -1,5 +1,6 @@
 import React from "react";
 import MasterLayout from "../masterLayout/MasterLayout";
+import MasterLayout1 from "../masterLayout/MasterLayout1";
 // import Breadcrumb from "../components/Breadcrumb";
 import DashBoardLayerOne from "../components/DashBoardLayerOne";
 
@@ -8,7 +9,7 @@ const HomePageOne = () => {
     <>
     {/* <div style={{ height: '300vh', width: '100%', backgroundColor: 'black' }}> */}
       {/* MasterLayout */}
-      <MasterLayout>
+      <MasterLayout1>
         {/* Breadcrumb */}
         {/* <Breadcrumb title="AI" /> */}
 
@@ -16,7 +17,7 @@ const HomePageOne = () => {
         {/* DashBoardLayerOne */}
         <DashBoardLayerOne />
 
-      </MasterLayout>
+      </MasterLayout1>
       {/* </div> */}
     </>
   );

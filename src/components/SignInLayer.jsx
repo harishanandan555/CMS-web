@@ -4,14 +4,16 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 const SignInLayer = () => {
+  const [isSignUp, setIsSignUp] = useState(false); // Toggle between Sign In and Sign Up
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [role, setRole] = useState(""); // Default role
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Retrieve saved email if "Remember me" was checked
     const savedEmail = localStorage.getItem("rememberedEmail");
     if (savedEmail) {
       setEmail(savedEmail);
@@ -19,43 +21,85 @@ const SignInLayer = () => {
     }
   }, []);
 
-
-  
   const handleSignIn = async (e) => {
-    e.preventDefault();  // Prevent form default behavior
+    e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:1337/v1/superadmin/cms/login",
-        { login_email: email, password, login_role: "superadmin" }
-      );
-      console.log(response.data);
-
-      // Save the token in localStorage
-      if (response.data.token) {
-        localStorage.setItem('user_token', response.data.token);
-      }
-
-      // Store email if rememberMe is checked
-      if (rememberMe) {
-        localStorage.setItem('rememberedEmail', email);
+      const response = await axios.post("http://localhost:1337/v1/superadmin/cms/login", {
+        login_email: email,
+        password,
+        login_role: role,
+      });
+  
+      console.log("Login response:", response.data);
+  
+      if (response.data.code === "000") {
+        const { token, role, fk_login_id } = response.data;
+  
+        if (token) {
+          localStorage.setItem("user_token", token);
+        }
+  
+        if (rememberMe) {
+          localStorage.setItem("rememberedEmail", email);
+        } else {
+          localStorage.removeItem("rememberedEmail");
+        }
+  
+        // Store fk_login_id if the role is advisor
+        if (role === "advisor" && fk_login_id && token) {
+          localStorage.setItem("advisor_fk_login_id", fk_login_id);
+          localStorage.setItem("advisor_token", token);
+        }
+  
+        // Log all localStorage items
+        console.log("Current localStorage items:");
+        Object.keys(localStorage).forEach((key) => {
+          console.log(`${key}:`, localStorage.getItem(key));
+        });
+  
+        // Navigate based on role
+        if (role === "advisor" || role === "distributor") {
+          navigate("/index-2");
+        } else {
+          navigate("/index-1");
+        }
       } else {
-        localStorage.removeItem('rememberedEmail');
+        console.error("Login failed: Invalid credentials or response code not 200");
       }
-
-      // Navigate to the Dashboard screen after login
-      
-        navigate('/index-1'); // Specify the target path for navigation
-     // Adjust this to your Dashboard route
-
     } catch (error) {
-      console.error("Login failed:", error.response?.data || error.message);
+      console.error("Login error:", error.response?.data || error.message);
     }
   };
-
   
+  
+  
+  const handleSignUp = async (e) => {
+    e.preventDefault();
 
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible);
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:1337/v1/superadmin/cms/create/password", {
+        email: email,
+        password: password,
+        login_role: role,
+      });
+
+      console.log("Sign-up response:", response.data);
+
+      if (response.data.code === "200") {
+        alert("Account created successfully! You can now log in.");
+        setIsSignUp(false); // Switch back to Sign In mode
+      } else {
+        alert("Failed to create an account. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating account:", error.response?.data || error.message);
+      alert("An error occurred while creating the account.");
+    }
   };
 
   return (
@@ -71,12 +115,13 @@ const SignInLayer = () => {
             <Link to="/index-2" className="mb-40 max-w-290-px">
               <img src="assets/images/logo.png" alt="Logo" />
             </Link>
-            <h4 className="mb-12">Sign In to your Account</h4>
+            <h4 className="mb-12">{isSignUp ? "Create Your Account" : "Sign In to Your Account"}</h4>
             <p className="mb-32 text-secondary-light text-lg">
-              Welcome back! Please enter your details
+              {isSignUp ? "Register your details below" : "Welcome back! Please enter your details"}
             </p>
           </div>
-          <form onSubmit={handleSignIn}>
+
+          <form onSubmit={isSignUp ? handleSignUp : handleSignIn}>
             <div className="icon-field mb-16">
               <span className="icon top-50 translate-middle-y">
                 <Icon icon="mage:email" />
@@ -90,6 +135,7 @@ const SignInLayer = () => {
                 required
               />
             </div>
+
             <div className="position-relative mb-20">
               <div className="icon-field">
                 <span className="icon top-50 translate-middle-y">
@@ -105,36 +151,83 @@ const SignInLayer = () => {
                 />
               </div>
               <span
-                className="toggle-password ri-eye-line cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light"
-                onClick={togglePasswordVisibility}
+                className="toggle-password cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light"
+                onClick={() => setPasswordVisible(!passwordVisible)}
               >
                 <Icon icon={passwordVisible ? "ri:eye-off-line" : "ri:eye-line"} />
               </span>
             </div>
-            <div className="d-flex justify-content-between gap-2">
-              <div className="form-check style-check d-flex align-items-center">
-                <input
-                  className="form-check-input border border-neutral-300"
-                  type="checkbox"
-                  id="remember"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe(!rememberMe)}
-                />
-                <label className="form-check-label" htmlFor="remember">
-                  Remember me
-                </label>
+
+            {isSignUp && (
+              <div className="position-relative mb-20">
+                <div className="icon-field">
+                  <span className="icon top-50 translate-middle-y">
+                    <Icon icon="solar:lock-password-outline" />
+                  </span>
+                  <input
+                    type={passwordVisible ? "text" : "password"}
+                    className="form-control h-56-px bg-neutral-50 radius-12"
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
-              <Link to="#" className="text-primary-600 fw-medium">
-                Forgot Password?
-              </Link>
-            </div>
+            )}
+
+<div className="position-relative mb-20">
+  <div className="icon-field">
+    <span className="icon top-50 translate-middle-y">
+      <Icon icon="mdi:account-box-outline" />
+    </span>
+    <select
+      className="form-control h-56-px bg-neutral-50 radius-12"
+      value={role}
+      onChange={(e) => setRole(e.target.value)}
+      required
+    >
+      <option value="" disabled selected>
+        Select Role
+      </option>
+      {isSignUp ? (
+        <>
+          <option value="advisor">Advisor</option>
+          <option value="distributor">Distributor</option>
+        </>
+      ) : (
+        <>
+          <option value="superadmin">Superadmin</option>
+          <option value="admin">Admin</option>
+          <option value="advisor">Advisor</option>
+          <option value="distributor">Distributor</option>
+        </>
+      )}
+    </select>
+  </div>
+</div>
+
+
+
             <button
               type="submit"
               className="btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-32"
             >
-              Sign In
+              {isSignUp ? "Sign Up" : "Sign In"}
             </button>
           </form>
+
+          <div className="text-center mt-16">
+            <p>
+              {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+              <span
+                className="text-primary cursor-pointer"
+                onClick={() => setIsSignUp(!isSignUp)}
+              >
+                {isSignUp ? "Sign In" : "Sign Up"}
+              </span>
+            </p>
+          </div>
         </div>
       </div>
     </section>

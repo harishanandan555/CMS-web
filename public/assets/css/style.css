@@ -15619,7 +15619,7 @@ td.fc-header-center {
 
 .sidebar-menu li a {
   padding: 0.625rem 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   display: flex;
   align-items: center;
   color: var(--text-secondary-light);
@@ -15628,7 +15628,7 @@ td.fc-header-center {
   -moz-border-radius: 8px;
   -ms-border-radius: 8px;
   -o-border-radius: 8px;
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 
 @media (min-width: 1650px) {

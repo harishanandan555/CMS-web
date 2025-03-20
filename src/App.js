@@ -23,6 +23,11 @@ import ChequeUpload from "./components/ChequePage";
 import NomineeDetails from "./components/NomineePage";
 import PersonalVerification from "./components/PersonalPage";
 import CustomerList from "./pages/CustomerList";
+import EventCustomerPage from "./pages/EventCustomer";
+import AdvisorLayout from "./pages/Advisor/AdvisorcustMaster";
+import AdvisorEventLayout from "./pages/Advisor/AdvisorEventMaster";
+import NewEventMaster from "./pages/Advisor/NewEventMaster";
+import EditEventMaster from "./pages/Advisor/EditEventMaster";
 function App() {
   return (
     <BrowserRouter>
@@ -33,6 +38,7 @@ function App() {
         <Route exact path='/' element={<SignInPage />} />
         <Route exact path='/index-1' element={<HomePageTwo />} />
         <Route exact path='/index-2' element={<HomePageOne />} />
+    
         
         <Route path="/wizardstepper" element={<WizardUser />}>
         <Route exact path='/wizardstepper/add-user' element={<AddUserPage/>} /> 
@@ -49,6 +55,7 @@ function App() {
          
         </Route>
         <Route path="/customer-list" element={< CustomerList/>}/>
+        <Route path="/event-list" element={<EventCustomerPage />} />
         <Route exact path='/users-list' element={<UsersListPage />} />
         <Route exact path='/distributor' element={<DistributorPage />} />
         <Route exact path='/advisor' element={<AdvisorPage />} />
@@ -58,6 +65,10 @@ function App() {
         <Route exact path='/sign-up' element={<SignUpPage />} />
 
         <Route exact path='/wizard' element={<WizardPage />} />
+        <Route exact path="/advisor-customer" element={<AdvisorLayout/>} />
+        <Route exact path="/advisor-event" element={<AdvisorEventLayout/>} />
+        <Route exact path="/new-event" element={<NewEventMaster/>} />
+        <Route exact path="/edit-event" element={<EditEventMaster/>} />
 
       </Routes>
     </BrowserRouter>
