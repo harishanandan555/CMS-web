@@ -7,36 +7,36 @@ import TopPerformerOne from './child/TopPerformerOne';
 import TopCountries from './child/TopCountries';
 import GeneratedContent from './child/GeneratedContent';
 import UnitCountOne from './child/UnitCountOne';
-
+import UnitCountThree from './child/UnitCountthree';
 const DashBoardLayerOne = () => {
 
     return (
         <>
             {/* UnitCountOne */}
-            <UnitCountOne />
+          <UnitCountThree/>
 
             <section className="row gy-4 mt-1">
 
-                {/* SalesStatisticOne */}
-                <SalesStatisticOne />
+               
+                {/* <SalesStatisticOne /> */}
 
                 {/* TotalSubscriberOne */}
-                <TotalSubscriberOne />
+                {/* <TotalSubscriberOne /> */}
 
                 {/* UsersOverviewOne */}
-                <UsersOverviewOne />
+                {/* <UsersOverviewOne /> */}
 
                 {/* LatestRegisteredOne */}
-                <LatestRegisteredOne />
+                {/* <LatestRegisteredOne /> */}
 
                 {/* TopPerformerOne */}
-                <TopPerformerOne />
+                {/* <TopPerformerOne /> */}
 
                 {/* TopCountries */}
-                <TopCountries />
+                {/* <TopCountries /> */}
 
                 {/* GeneratedContent */}
-                <GeneratedContent />
+                {/* <GeneratedContent /> */}
 
             </section>
         </>

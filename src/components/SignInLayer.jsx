@@ -1,121 +1,233 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { useNavigate } from 'react-router-dom';
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Icon } from "@iconify/react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 const SignInLayer = () => {
+  const [isSignUp, setIsSignUp] = useState(false); // Toggle between Sign In and Sign Up
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [role, setRole] = useState(""); // Default role
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate('/index-1'); // Specify the target path for navigation
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:1337/v1/superadmin/cms/login", {
+        login_email: email,
+        password,
+        login_role: role,
+      });
+  
+      console.log("Login response:", response.data);
+  
+      if (response.data.code === "000") {
+        const { token, role, fk_login_id } = response.data;
+  
+        if (token) {
+          localStorage.setItem("user_token", token);
+        }
+  
+        if (rememberMe) {
+          localStorage.setItem("rememberedEmail", email);
+        } else {
+          localStorage.removeItem("rememberedEmail");
+        }
+  
+        // Store fk_login_id if the role is advisor
+        if (role === "advisor" && fk_login_id && token) {
+          localStorage.setItem("advisor_fk_login_id", fk_login_id);
+          localStorage.setItem("advisor_token", token);
+        }
+  
+        // Log all localStorage items
+        console.log("Current localStorage items:");
+        Object.keys(localStorage).forEach((key) => {
+          console.log(`${key}:`, localStorage.getItem(key));
+        });
+  
+        // Navigate based on role
+        if (role === "advisor" || role === "distributor") {
+          navigate("/index-2");
+        } else {
+          navigate("/index-1");
+        }
+      } else {
+        console.error("Login failed: Invalid credentials or response code not 200");
+      }
+    } catch (error) {
+      console.error("Login error:", error.response?.data || error.message);
+    }
+  };
+  
+  
+  
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:1337/v1/superadmin/cms/create/password", {
+        email: email,
+        password: password,
+        login_role: role,
+      });
+
+      console.log("Sign-up response:", response.data);
+
+      if (response.data.code === "200") {
+        alert("Account created successfully! You can now log in.");
+        setIsSignUp(false); // Switch back to Sign In mode
+      } else {
+        alert("Failed to create an account. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating account:", error.response?.data || error.message);
+      alert("An error occurred while creating the account.");
+    }
   };
 
   return (
-    <section className='auth bg-base d-flex flex-wrap'>
-      <div className='auth-left d-lg-block d-none'>
-        <div className='d-flex align-items-center flex-column h-100 justify-content-center'>
-          <img src='assets/images/auth/auth-img.png' alt='' />
+    <section className="auth bg-base d-flex flex-wrap">
+      <div className="auth-left d-lg-block d-none">
+        <div className="d-flex align-items-center flex-column h-100 justify-content-center">
+          <img src="assets/images/auth/auth-img.png" alt="Auth" />
         </div>
       </div>
-      <div className='auth-right py-32 px-24 d-flex flex-column justify-content-center'>
-        <div className='max-w-464-px mx-auto w-100'>
+      <div className="auth-right py-32 px-24 d-flex flex-column justify-content-center">
+        <div className="max-w-464-px mx-auto w-100">
           <div>
-            <Link to='/index-2' className='mb-40 max-w-290-px'>
-              <img src='assets/images/logo.png' alt='' />
+            <Link to="/index-2" className="mb-40 max-w-290-px">
+              <img src="assets/images/logo.png" alt="Logo" />
             </Link>
-            <h4 className='mb-12'>Sign In to your Account</h4>
-            <p className='mb-32 text-secondary-light text-lg'>
-              Welcome back! please enter your detail
+            <h4 className="mb-12">{isSignUp ? "Create Your Account" : "Sign In to Your Account"}</h4>
+            <p className="mb-32 text-secondary-light text-lg">
+              {isSignUp ? "Register your details below" : "Welcome back! Please enter your details"}
             </p>
           </div>
-          <form action='#'>
-            <div className='icon-field mb-16'>
-              <span className='icon top-50 translate-middle-y'>
-                <Icon icon='mage:email' />
+
+          <form onSubmit={isSignUp ? handleSignUp : handleSignIn}>
+            <div className="icon-field mb-16">
+              <span className="icon top-50 translate-middle-y">
+                <Icon icon="mage:email" />
               </span>
               <input
-                type='email'
-                className='form-control h-56-px bg-neutral-50 radius-12'
-                placeholder='Email'
+                type="email"
+                className="form-control h-56-px bg-neutral-50 radius-12"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
-            <div className='position-relative mb-20'>
-              <div className='icon-field'>
-                <span className='icon top-50 translate-middle-y'>
-                  <Icon icon='solar:lock-password-outline' />
+
+            <div className="position-relative mb-20">
+              <div className="icon-field">
+                <span className="icon top-50 translate-middle-y">
+                  <Icon icon="solar:lock-password-outline" />
                 </span>
                 <input
-                  type='password'
-                  className='form-control h-56-px bg-neutral-50 radius-12'
-                  id='your-password'
-                  placeholder='Password'
+                  type={passwordVisible ? "text" : "password"}
+                  className="form-control h-56-px bg-neutral-50 radius-12"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
               </div>
               <span
-                className='toggle-password ri-eye-line cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light'
-                data-toggle='#your-password'
-              />
+                className="toggle-password cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light"
+                onClick={() => setPasswordVisible(!passwordVisible)}
+              >
+                <Icon icon={passwordVisible ? "ri:eye-off-line" : "ri:eye-line"} />
+              </span>
             </div>
-            <div className=''>
-              <div className='d-flex justify-content-between gap-2'>
-                <div className='form-check style-check d-flex align-items-center'>
+
+            {isSignUp && (
+              <div className="position-relative mb-20">
+                <div className="icon-field">
+                  <span className="icon top-50 translate-middle-y">
+                    <Icon icon="solar:lock-password-outline" />
+                  </span>
                   <input
-                    className='form-check-input border border-neutral-300'
-                    type='checkbox'
-                    defaultValue=''
-                    id='remeber'
+                    type={passwordVisible ? "text" : "password"}
+                    className="form-control h-56-px bg-neutral-50 radius-12"
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
                   />
-                  <label className='form-check-label' htmlFor='remeber'>
-                    Remember me{" "}
-                  </label>
                 </div>
-                <Link to='#' className='text-primary-600 fw-medium'>
-                  Forgot Password?
-                </Link>
               </div>
-            </div>
+            )}
+
+<div className="position-relative mb-20">
+  <div className="icon-field">
+    <span className="icon top-50 translate-middle-y">
+      <Icon icon="mdi:account-box-outline" />
+    </span>
+    <select
+      className="form-control h-56-px bg-neutral-50 radius-12"
+      value={role}
+      onChange={(e) => setRole(e.target.value)}
+      required
+    >
+      <option value="" disabled selected>
+        Select Role
+      </option>
+      {isSignUp ? (
+        <>
+          <option value="advisor">Advisor</option>
+          <option value="distributor">Distributor</option>
+        </>
+      ) : (
+        <>
+          <option value="superadmin">Superadmin</option>
+          <option value="admin">Admin</option>
+          <option value="advisor">Advisor</option>
+          <option value="distributor">Distributor</option>
+        </>
+      )}
+    </select>
+  </div>
+</div>
+
+
+
             <button
-              onClick={handleClick}
-              type='submit'
-              className='btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-32'
+              type="submit"
+              className="btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-32"
             >
-              {" "}
-              Sign In
+              {isSignUp ? "Sign Up" : "Sign In"}
             </button>
-            <div className='mt-32 center-border-horizontal text-center'>
-              <span className='bg-base z-1 px-4'>Or sign in with</span>
-            </div>
-            <div className='mt-32 d-flex align-items-center gap-3'>
-              <button
-                type='button'
-                className='fw-semibold text-primary-light py-16 px-24 w-50 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50'
-              >
-                <Icon
-                  icon='ic:baseline-facebook'
-                  className='text-primary-600 text-xl line-height-1'
-                />
-                Google
-              </button>
-              <button
-                type='button'
-                className='fw-semibold text-primary-light py-16 px-24 w-50 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50'
-              >
-                <Icon
-                  icon='logos:google-icon'
-                  className='text-primary-600 text-xl line-height-1'
-                />
-                Google
-              </button>
-            </div>
-            <div className='mt-32 text-center text-sm'>
-              <p className='mb-0'>
-                Don’t have an account?{" "}
-                <Link to='/sign-up' className='text-primary-600 fw-semibold'>
-                  Sign Up
-                </Link>
-              </p>
-            </div>
           </form>
+
+          <div className="text-center mt-16">
+            <p>
+              {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+              <span
+                className="text-primary cursor-pointer"
+                onClick={() => setIsSignUp(!isSignUp)}
+              >
+                {isSignUp ? "Sign In" : "Sign Up"}
+              </span>
+            </p>
+          </div>
         </div>
       </div>
     </section>

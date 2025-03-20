@@ -1,11 +1,87 @@
 import { Icon } from '@iconify/react/dist/iconify.js';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from "axios";
+
 
 const ViewProfileLayer = () => {
     const [imagePreview, setImagePreview] = useState('assets/images/user-grid/user-grid-img13.png');
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-
+    const [advisorList, setAdvisorList] = useState([]); // ✅ Corrected state variable name
+      const [loading, setLoading] = useState(false); // ✅ Added missing state
+      const [error, setError] = useState(""); 
+    useEffect(() => {
+        
+        fetchDetails();
+      }, []);
+    
+      const fetchDetails = async () => {
+        setLoading(true);
+        setError("");
+    
+        try {
+          const token = localStorage.getItem("advisor_token");
+          const fk_login_id = localStorage.getItem("advisor_fk_login_id"); // Get advisor token
+          const headers = token ? { "bb-access-token": token } : {}; // Set headers
+    
+          const response = await axios.post(
+            "http://localhost:1337/v1/cms-advisor/details",
+            { fk_login_id: fk_login_id },
+            { headers } // Pass headers
+          );
+    
+          console.log("Response:", response.data);
+    
+          if (response.data.result.advisorDetails) {
+            setAdvisorList(response.data.result.advisorDetails);
+          } else {
+            setAdvisorList([]);
+            setError("No customers found");
+          }
+        } catch (err) {
+          console.error("Error fetching data:", err);
+          setError("Failed to fetch data");
+        }
+    
+        setLoading(false);
+      };
+    
+      const handleSaveChanges = async (e) => {
+        e.preventDefault();
+    
+        const updatedData = {
+            fk_login_id: advisorList.fk_login_id,
+            name: advisorList.name,
+            email: advisorList.email,
+            category: advisorList.category,
+            company_name: advisorList.company_name,
+            description: advisorList.description,
+            price: advisorList.price,
+            ratings: advisorList.ratings,
+        };
+    
+        try {
+            const response = await fetch("http://localhost:1337/v1/advisor/update", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "bb-access-token": localStorage.getItem("bb-access-token"), // Include the token
+                },
+                body: JSON.stringify(updatedData),
+            });
+    
+            const result = await response.json();
+            if (response.ok) {
+                alert("Details updated successfully!");
+            } else {
+                alert("Error updating details: " + result.messageText);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to update details.");
+        }
+    };
+    
     // Toggle function for password field
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
@@ -41,8 +117,8 @@ const ViewProfileLayer = () => {
                                 alt=""
                                 className="border br-white border-width-2-px w-200-px h-200-px rounded-circle object-fit-cover"
                             />
-                            <h6 className="mb-0 mt-16">Jacob Jones</h6>
-                            <span className="text-secondary-light mb-16">ifrandom@gmail.com</span>
+                            <h6 className="mb-0 mt-16">{advisorList.name}</h6>
+                            <span className="text-secondary-light mb-16">{advisorList.email}</span>
                         </div>
                         <div className="mt-24">
                             <h6 className="text-xl mb-16">Personal Info</h6>
@@ -52,7 +128,7 @@ const ViewProfileLayer = () => {
                                         Full Name
                                     </span>
                                     <span className="w-70 text-secondary-light fw-medium">
-                                        : Will Jonto
+                                        :{advisorList.name}
                                     </span>
                                 </li>
                                 <li className="d-flex align-items-center gap-1 mb-12">
@@ -61,7 +137,7 @@ const ViewProfileLayer = () => {
                                         Email
                                     </span>
                                     <span className="w-70 text-secondary-light fw-medium">
-                                        : willjontoax@gmail.com
+                                        :{advisorList.email}
                                     </span>
                                 </li>
                                 <li className="d-flex align-items-center gap-1 mb-12">
@@ -70,25 +146,34 @@ const ViewProfileLayer = () => {
                                         Phone Number
                                     </span>
                                     <span className="w-70 text-secondary-light fw-medium">
-                                        : (1) 2536 2561 2365
+                                        :{advisorList.auth_mobile_number}
                                     </span>
                                 </li>
                                 <li className="d-flex align-items-center gap-1 mb-12">
                                     <span className="w-30 text-md fw-semibold text-primary-light">
                                         {" "}
-                                        Department
+                                        Company
                                     </span>
                                     <span className="w-70 text-secondary-light fw-medium">
-                                        : Design
+                                        :{advisorList.company_name}
                                     </span>
                                 </li>
                                 <li className="d-flex align-items-center gap-1 mb-12">
                                     <span className="w-30 text-md fw-semibold text-primary-light">
                                         {" "}
-                                        Designation
+                                        Price
                                     </span>
                                     <span className="w-70 text-secondary-light fw-medium">
-                                        : UI UX Designer
+                                        :{advisorList.price}
+                                    </span>
+                                </li>
+                                <li className="d-flex align-items-center gap-1 mb-12">
+                                    <span className="w-30 text-md fw-semibold text-primary-light">
+                                        {" "}
+                                        Ratings
+                                    </span>
+                                    <span className="w-70 text-secondary-light fw-medium">
+                                        :{advisorList.ratings}
                                     </span>
                                 </li>
                                 <li className="d-flex align-items-center gap-1 mb-12">
@@ -262,47 +347,35 @@ const ViewProfileLayer = () => {
                                         <div className="col-sm-6">
                                             <div className="mb-20">
                                                 <label
-                                                    htmlFor="depart"
+                                                    htmlFor="name"
                                                     className="form-label fw-semibold text-primary-light text-sm mb-8"
                                                 >
-                                                    Department
-                                                    <span className="text-danger-600">*</span>{" "}
+                                                    Company
+                                                    <span className="text-danger-600">*</span>
                                                 </label>
-                                                <select
-                                                    className="form-control radius-8 form-select"
-                                                    id="depart"
-                                                    defaultValue="Select Event Title"
-                                                >
-                                                    <option value="Select Event Title" disabled>
-                                                        Select Event Title
-                                                    </option>
-                                                    <option value="Enter Event Title">Enter Event Title</option>
-                                                    <option value="Enter Event Title One">Enter Event Title One</option>
-                                                    <option value="Enter Event Title Two">Enter Event Title Two</option>
-                                                </select>
+                                                <input
+                                                    type="text"
+                                                    className="form-control radius-8"
+                                                    id="name"
+                                                    placeholder="Enter Company Name"
+                                                />
                                             </div>
                                         </div>
                                         <div className="col-sm-6">
                                             <div className="mb-20">
                                                 <label
-                                                    htmlFor="desig"
+                                                    htmlFor="number"
                                                     className="form-label fw-semibold text-primary-light text-sm mb-8"
                                                 >
-                                                    Designation
-                                                    <span className="text-danger-600">*</span>{" "}
+                                                    Price
+                                                    <span className="text-danger-600">*</span>
                                                 </label>
-                                                <select
-                                                    className="form-control radius-8 form-select"
-                                                    id="desig"
-                                                    defaultValue="Select Designation Title"
-                                                >
-                                                    <option value="Select Designation Title" disabled>
-                                                        Select Designation Title
-                                                    </option>
-                                                    <option value="Enter Designation Title">Enter Designation Title</option>
-                                                    <option value="Enter Designation Title One">Enter Designation Title One</option>
-                                                    <option value="Enter Designation Title Two">Enter Designation Title Two</option>
-                                                </select>
+                                                <input
+                                                    type="number"
+                                                    className="form-control radius-8"
+                                                    id="number"
+                                                    placeholder="Enter Price "
+                                                />
                                             </div>
                                         </div>
                                         <div className="col-sm-6">

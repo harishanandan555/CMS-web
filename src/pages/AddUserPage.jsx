@@ -8,16 +8,13 @@ const AddUserPage = () => {
   return (
     <>
       {/* MasterLayout */}
-      <MasterLayout>
-
-        {/* Breadcrumb */}
-        <Breadcrumb title="Add User" />
+      
 
         {/* AddUserLayer */}
         <AddUserLayer />
 
 
-      </MasterLayout>
+   
     </>
   );
 };
