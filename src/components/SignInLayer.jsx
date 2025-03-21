@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-
+import API_BASE_URL from "../constants/constants";
 const SignInLayer = () => {
   const [isSignUp, setIsSignUp] = useState(false); // Toggle between Sign In and Sign Up
   const [email, setEmail] = useState("");
@@ -24,7 +24,7 @@ const SignInLayer = () => {
   const handleSignIn = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:1337/v1/superadmin/cms/login", {
+      const response = await axios.post(`${API_BASE_URL}/v1/superadmin/cms/login`, {
         login_email: email,
         password,
         login_role: role,
@@ -82,7 +82,7 @@ const SignInLayer = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:1337/v1/superadmin/cms/create/password", {
+      const response = await axios.post(`${API_BASE_URL}/v1/superadmin/cms/create/password`, {
         email: email,
         password: password,
         login_role: role,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../constants/constants";
 
 const AdvisorCustomer = () => {
   const [customerList, setCustomerList] = useState([]);
@@ -20,7 +21,7 @@ const AdvisorCustomer = () => {
       const headers = token ? { "bb-access-token": token } : {}; // Set headers
 
       const response = await axios.post(
-        "http://localhost:1337/v1/cms-advisor/details",
+        `${API_BASE_URL}/v1/cms-advisor/details/v1/cms-advisor/details`,
         { fk_login_id: fk_login_id },
         { headers } // Pass headers
       );

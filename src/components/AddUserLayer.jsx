@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Snackbar, Alert } from "@mui/material";
+import API_BASE_URL from "../constants/constants";
 
 const AddUserScreen = () => {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -40,7 +41,7 @@ const AddUserScreen = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:1337/v1/superadmin/cms_users/login", {
+      const response = await fetch(`${API_BASE_URL}/v1/superadmin/cms_users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -11,7 +11,7 @@ import {
   MDBInput,
 } from "mdb-react-ui-kit";
 import { Snackbar, Alert } from "@mui/material";
-
+import API_BASE_URL from "../../constants/constants";
 function EventRegistrationForm() {
   const { register, handleSubmit } = useForm();
   const [step, setStep] = useState(1);
@@ -59,7 +59,7 @@ const onSubmit = (data) => {
 
   console.log("API Request Body:", requestBody);
 
-  fetch("http://localhost:1337/v1/cms-advisor/create/event", {
+  fetch(`${API_BASE_URL}/v1/cms-advisor/create/event`, {
     method: "POST",
     headers: {
       "bb-access-token": token,

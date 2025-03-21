@@ -1,7 +1,7 @@
 import { Icon } from '@iconify/react/dist/iconify.js';
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
-
+import API_BASE_URL from '../constants/constants';
 
 const ViewProfileLayer = () => {
     const [imagePreview, setImagePreview] = useState('assets/images/user-grid/user-grid-img13.png');
@@ -25,7 +25,7 @@ const ViewProfileLayer = () => {
           const headers = token ? { "bb-access-token": token } : {}; // Set headers
     
           const response = await axios.post(
-            "http://localhost:1337/v1/cms-advisor/details",
+            `${API_BASE_URL}/v1/cms-advisor/details`,
             { fk_login_id: fk_login_id },
             { headers } // Pass headers
           );
@@ -61,7 +61,7 @@ const ViewProfileLayer = () => {
         };
     
         try {
-            const response = await fetch("http://localhost:1337/v1/advisor/update", {
+            const response = await fetch(`${API_BASE_URL}/v1/advisor/update`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

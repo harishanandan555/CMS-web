@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import API_BASE_URL from "../constants/constants";
 const EmailPage = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -33,7 +33,7 @@ const EmailPage = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:1337/v1/superadmin/cms_users/verifyemail",
+        `${API_BASE_URL}/v1/superadmin/cms_users/verifyemail`,
         {
           method: "POST",
           headers: {

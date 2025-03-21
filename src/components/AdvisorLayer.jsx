@@ -12,6 +12,7 @@ import { ProgressBar } from 'react-loader-spinner';
 import ReactCardFlip from 'react-card-flip';
 import { useNavigate } from "react-router-dom";
 import { Campaign } from '@mui/icons-material';
+import API_BASE_URL from '../constants/constants';
 
 
 const AdvisorLayer = () => {
@@ -44,7 +45,7 @@ const AdvisorLayer = () => {
 
       const config = { headers: { 'bb-access-token': token } };
       const res = await axios.get(
-        'http://localhost:1337/v1/superadmin/advisor/list',
+        `${API_BASE_URL}/v1/superadmin/advisor/list`,
         config
       );
 
@@ -103,7 +104,7 @@ const AdvisorLayer = () => {
       };
 
       const response = await axios.post(
-        'http://localhost:1337/v1/superadmin/advisor-customer/list',
+        `${API_BASE_URL}/v1/superadmin/advisor-customer/list`,
         { login_id }, // Send fk_login_id in body
         config
       );
@@ -140,7 +141,7 @@ const AdvisorLayer = () => {
         };
 
         const response = await axios.post(
-            'http://localhost:1337/v1/superadmin/event/customer/list',
+            `${API_BASE_URL}/v1/superadmin/event/customer/list`,
             { advisorId },
             config
         );
@@ -214,7 +215,7 @@ const AdvisorLayer = () => {
         }
       };
       const response = await axios.post(
-        'http://localhost:1337/v1/superadmin/event/qr/code',
+        `${API_BASE_URL}/v1/superadmin/event/qr/code`,
         { fk_login_id },
         config
       );;
@@ -246,7 +247,7 @@ const AdvisorLayer = () => {
         }
       };
       const response = await axios.post(
-        'http://localhost:1337/v1/superadmin/scan/qr/code',
+        `${API_BASE_URL}/v1/superadmin/scan/qr/code`,
         { qrCode },
         config
       );;

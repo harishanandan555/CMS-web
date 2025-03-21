@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import OTPInput from "otp-input-react";
 import PinInput from "react-pin-input";
-
+import API_BASE_URL from "../constants/constants";
 const PanOTPPage = () => {
   const [emailOtp, setEmailOtp] = useState("");
   const [mobileOtp, setMobileOtp] = useState("");
@@ -27,7 +27,7 @@ const PanOTPPage = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:1337/v1/superadmin/cms_users/validate_otp", {
+      const response = await fetch(`${API_BASE_URL}/v1/superadmin/cms_users/validate_otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

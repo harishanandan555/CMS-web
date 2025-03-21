@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Typography, Box, CircularProgress, Alert, Snackbar } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import axios from "axios";
-
+import API_BASE_URL from "../constants/constants";
 const ChequeUpload = () => {
   const [chequeImage, setChequeImage] = useState(null);
   const [file, setFile] = useState(null);
@@ -62,7 +62,7 @@ const ChequeUpload = () => {
 
     try {
       const response = await axios.put(
-        "http://localhost:1337/v1/cmsvalidation/cms/verifyidproof",
+        `${API_BASE_URL}/v1/cmsvalidation/cms/verifyidproof`,
         formData,
         {
           headers: {

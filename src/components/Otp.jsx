@@ -3,6 +3,7 @@ import OTPInput, { ResendOTP } from "otp-input-react";
 import { useNavigate } from "react-router-dom";
 import { OrbitProgress } from "react-loading-indicators";
 import PinInput from "react-pin-input";
+import API_BASE_URL from "../constants/constants";
 const OtpPage = () => {
   const [otp, setOtp] = useState("");
   const [storedOtp, setStoredOtp] = useState("");
@@ -43,7 +44,7 @@ const OtpPage = () => {
     const deviceId = localStorage.getItem("device_id") || crypto.randomUUID(); // Ensure device ID persistence
 
     try {
-        const response = await fetch("http://localhost:1337/v1/superadmin/cms_users/validate_otp", {
+        const response = await fetch(`${API_BASE_URL}/v1/superadmin/cms_users/validate_otp`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

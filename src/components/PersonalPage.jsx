@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import axios from "axios";
+import API_BASE_URL from "../constants/constants";
 const PersonalVerification = () => {
   const statesOfIndia = [
     "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal" 
@@ -60,7 +61,7 @@ const PersonalVerification = () => {
 
       try {
         const response = await axios.post(
-          "http://localhost:1337/v1/cmsvalidation/cms/personal/update",
+          `${API_BASE_URL}/v1/cmsvalidation/cms/personal/update`,
           requestBody,
           {
             headers: {

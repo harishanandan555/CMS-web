@@ -5,7 +5,7 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import { FiEye } from "react-icons/fi";
 import {ProgressBar} from 'react-loader-spinner';
-
+import API_BASE_URL from '../constants/constants';
 const DistributorPageLayer = () => {
   const [clientList, setClientList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +29,7 @@ const DistributorPageLayer = () => {
   
       const config = { headers: { 'bb-access-token': token } };
       const res = await axios.get(
-        'http://localhost:1337/v1/superadmin/distributor/list',
+        `${API_BASE_URL}/v1/superadmin/distributor/list`,
         config
       );
   
