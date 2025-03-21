@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PinInput from "react-pin-input";
 import { useNavigate } from "react-router-dom";
-
+import API_BASE_URL from "../constants/constants";
 const PinSetupPage = () => {
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
@@ -20,7 +20,7 @@ const PinSetupPage = () => {
     const loginEmail = localStorage.getItem("user_email") || "roopashree_v@bullbox.in";
 
     try {
-      const response = await fetch("http://localhost:1337/v1/superadmin/cms_users/verifyemail", {
+      const response = await fetch(`${API_BASE_URL}/v1/superadmin/cms_users/verifyemail`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

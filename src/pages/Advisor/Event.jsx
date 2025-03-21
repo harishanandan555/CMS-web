@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Snackbar, Alert } from "@mui/material";
-
+import API_BASE_URL from "../../constants/constants";
 
 
 const AdvisorEvent = () => {
@@ -69,7 +69,7 @@ const [snackbarSeverity, setSnackbarSeverity] = useState("success");
       };
 
       const response = await axios.post(
-        "http://localhost:1337/v1/cms-advisor/details",
+        `${API_BASE_URL}/v1/cms-advisor/details`,
         { fk_login_id },
         config
       );
@@ -176,7 +176,7 @@ const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     }
 
     try {
-      const response = await fetch("http://localhost:1337/v1/cms-advisor/delete/event", {
+      const response = await fetch(`${API_BASE_URL}/v1/cms-advisor/delete/event`, {
         method: "POST",
         headers: {
           "bb-access-token": token,

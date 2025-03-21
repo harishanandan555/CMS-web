@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button, Spinner, Alert } from 'react-bootstrap';
 import Select from 'react-select';
 import axios from 'axios';
-
+import API_BASE_URL from '../constants/constants';
 const identityproof = [
   { value: 'aadhaar', label: 'AADHAAR' },
   { value: 'passport', label: 'PASSPORT' },
@@ -81,7 +81,7 @@ const NomineeDetails = ({ nextStep, prevStep }) => {
 
     try {
       const response = await axios.put(
-        "http://localhost:1337/v1/cmsvalidation/cms/nominee/upload", // Adjust the URL accordingly
+        `${API_BASE_URL}/v1/cmsvalidation/cms/nominee/upload`, // Adjust the URL accordingly
         formData,
         {
           headers: {

@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Card, Button, Container, Row, Col, Modal, Table } from "react-bootstrap";
 import { FaHeart } from "react-icons/fa";
 import moment from "moment";
-
+import API_BASE_URL from "../constants/constants";
 const EventListPage = () => {
   const location = useLocation();
   const { events = [] } = location.state || {}; // Get event list

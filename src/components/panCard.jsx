@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-
+import API_BASE_URL from "../constants/constants";
 const PanCardVerification = () => {
   const [panCardImage, setPanCardImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -46,7 +46,7 @@ const PanCardVerification = () => {
       formData.append("id_type", "pan");
       formData.append("attachment_list", selectedFile);
 
-      const response = await fetch("http://localhost:1337/v1/cmsvalidation/cms/verifyid", {
+      const response = await fetch(`${API_BASE_URL}/v1/cmsvalidation/cms/verifyid`, {
         method: "PUT",
         headers: {
           "bb-access-token": localStorage.getItem("Emailtoken2"),

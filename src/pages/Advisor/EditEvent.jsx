@@ -13,6 +13,7 @@ import {
 import { useLocation } from "react-router-dom";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import API_BASE_URL from "../../constants/constants";
 
 function EditEvent() {
   const { register, handleSubmit } = useForm();
@@ -74,7 +75,7 @@ function EditEvent() {
 
     console.log("Updated API Request Body:", requestBody);
 
-    fetch("http://localhost:1337/v1/cms-advisor/edit/event", {
+    fetch(`${API_BASE_URL}/v1/cms-advisor/edit/event`, {
       method: "POST",
       headers: {
         "bb-access-token": token,

@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import axios from "axios";
-
+import API_BASE_URL from "../constants/constants";
 const BankVerification = () => {
   const [selectedBank, setSelectedBank] = useState("");
   const [accountType, setAccountType] = useState("");
@@ -58,7 +58,7 @@ const BankVerification = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:1337/v1/cmsvalidation/cms/bankaccount/add",
+        `${API_BASE_URL}/v1/cmsvalidation/cms/bankaccount/add`,
         requestBody,
         {
           headers: {
@@ -90,7 +90,7 @@ console.log("response", response);
     const fetchBankAccounts = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:1337/v1/master/bankaccountlist",
+          `${API_BASE_URL}/v1/master/bankaccountlist`,
           {},
           {
             headers: {

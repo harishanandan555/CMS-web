@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
 import axios from "axios"
+import API_BASE_URL from "../constants/constants";
 const MasterLayout1 = ({ children }) => {
   let [sidebarActive, seSidebarActive] = useState(false);
   let [mobileMenu, setMobileMenu] = useState(false);
@@ -26,7 +27,7 @@ const MasterLayout1 = ({ children }) => {
       const headers = token ? { "bb-access-token": token } : {}; // Set headers
 
       const response = await axios.post(
-        "http://localhost:1337/v1/cms-advisor/details",
+        `${API_BASE_URL}/v1/cms-advisor/details`,
         { fk_login_id: fk_login_id },
         { headers } // Pass headers
       );
