@@ -142,6 +142,18 @@ const EventFetcher = () => {
             gap: '20px',
             marginTop: '30px'
         },
+        description: {
+            color: '#333',
+            fontSize: '14px',
+            lineHeight: '1.5',
+            margin: '8px 0',
+            height: 'auto', // Change this line
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitLineClamp: 3, // Limit to 3 lines
+            WebkitBoxOrient: 'vertical'
+        },
         card: {
             display: 'flex',
             borderRadius: '12px',
@@ -229,92 +241,105 @@ const EventFetcher = () => {
     return (
         <div style={styles.container}>
             <div style={styles.grid}>
-                {events.map((event, index) => (
-                    <div
-                        key={event.id}
-                        style={styles.card}
-                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1.0)'}
-                        onClick={() => navigate(`/event/${event.id}`, { state: { event } })}
-                    >
-                        {/* Image & Overlay */}
-                        <div style={styles.imageContainer}>
-                            <img
-                                src={imagePaths[index % imagePaths.length]}
-                                alt={event.title}
-                                style={styles.image}
-                            />
+            {events.map((event, index) => (
+    <div
+        key={event.id}
+        style={styles.card}
+        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1.0)'}
+        onClick={() => navigate(`/event/${event.id}`, { state: { event } })}
+    >
+        {/* Image & Overlay */}
+        <div style={styles.imageContainer}>
+            <img
+                src={imagePaths[index % imagePaths.length]}
+                alt={event.title}
+                style={styles.image}
+            />
 
-                            {/* Top Overlay */}
-                            <div style={{
-                                position: 'absolute',
-                                top: '10px',
-                                left: '10px',
-                                right: '10px',
-                                zIndex: 2,
-                                background: 'rgba(0, 0, 0, 0.55)',
-                                padding: '8px',
-                                borderRadius: '6px',
-                                backdropFilter: 'blur(4px)'
-                            }}>
-                                <div style={{
-                                    color: 'white',
-                                    fontSize: '16px',
-                                    fontWeight: 'bold',
-                                    marginBottom: '4px',
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis'
-                                }}>{event.title}</div>
-                                <div style={{
-                                    color: '#cfeaff',
-                                    fontSize: '12px'
-                                }}>{event.campaign_type}</div>
-                            </div>
+            {/* Top Overlay */}
+            <div style={{
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+                right: '10px',
+                zIndex: 2,
+                background: 'rgba(0, 0, 0, 0.55)',
+                padding: '8px',
+                borderRadius: '6px',
+                backdropFilter: 'blur(4px)'
+            }}>
+                <div style={{
+                    color: 'white',
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    marginBottom: '4px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                }}>{event.title}</div>
+                <div style={{
+                    color: '#cfeaff',
+                    fontSize: '12px'
+                }}>{event.campaign_type}</div>
+            </div>
 
-                            {/* Date Badge */}
-                            <div style={styles.dateBadge}>
-                                {formatDate(event.eventDate)} | {event.eventTime}
-                            </div>
-                        </div>
+            {/* Date Badge */}
+            <div style={styles.dateBadge}>
+                {formatDate(event.eventDate)} | {event.eventTime}
+            </div>
+        </div>
 
-                        {/* Details Section */}
-                        <div style={styles.details}>
-                            <div>
+        {/* Details Section */}
+        <div style={styles.details}>
+            <div>
+                <div style={styles.description}>
+                    {/* Dummy Long Description */}
+                    <p style={{
+                        color: '#333',
+                        fontSize: '14px',
+                        lineHeight: '1.5',
+                        margin: '8px 0',
+                        height: '50px', // Limit height for aesthetic
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 4, // Limit to 3 lines
+                        WebkitBoxOrient: 'vertical'
+                    }}>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    </p>
+                </div>
+            </div>
 
-                                <div style={styles.meta}>
+            <div style={styles.footer}>
+                {/* In the footer section, replace the location/online display with: */}
+                <span style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    color: '#666'
+                }}>
+                    {event.eventAddress && event.eventAddress !== "N/A" ? (
+                        <>
+                            <Globe size={14} style={{ color: '#ff3e3e' }} />  {event.eventAddress}
+                        </>
+                    ) : (
+                        <>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff3e3e" strokeWidth="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                            <span style={{ color: '#ff3e3e' }}>Online Event</span>
+                        </>
+                    )}
+                </span>
 
-                                </div>
-                            </div>
+                <span style={{ fontWeight: 500 }}><IndianRupee style={styles.detailIcon}/>{event.tickets[0].amount || 'Free'}</span>
+            </div>
+        </div>
+    </div>
+))}
 
-                            <div style={styles.footer}>
-                                {/* In the footer section, replace the location/online display with: */}
-                                <span style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    color: '#666'
-                                }}>
-                                    {event.eventAddress && event.eventAddress !== "N/A" ? (
-                                        <>
-                                            <Globe size={14} style={{ color: '#ff3e3e' }} />  {event.eventAddress}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff3e3e" strokeWidth="2">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-      </svg>
-      <span style={{ color: '#ff3e3e' }}>Online Event</span>
-                                        </>
-                                    )}
-                                </span>
-
-                                <span style={{ fontWeight: 500 }}><IndianRupee style={styles.detailIcon}/>{event.tickets[0].amount || 'Free'}</span>
-
-                            </div>
-                        </div>
-                    </div>
-                ))}
             </div>
         </div>
 
