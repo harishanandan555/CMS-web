@@ -1,101 +1,182 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import API_BASE_URL from "../../constants/constants";
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import {
+  Container,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  Box,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Chip,
+  TablePagination,
+  Skeleton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Alert,
+} from '@mui/material';
+import {
+  Search as SearchIcon,
+  FilterList as FilterListIcon,
+} from '@mui/icons-material';
 
-const AdvisorCustomer = () => {
-  const [customerList, setCustomerList] = useState([]);
+const CustomerList = () => {
+  const location = useLocation();
+  const [customers, setCustomers] = useState(location.state?.customers || []);
+  const [filteredCustomers, setFilteredCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
-    fetchDetails();
-  }, []);
+    filterCustomers();
+  }, [customers, searchTerm, filterStatus]);
 
-  const fetchDetails = async () => {
-    setLoading(true);
-    setError("");
+  const filterCustomers = () => {
+    let filtered = [...customers];
 
-    try {
-      const token = localStorage.getItem("advisor_token");
-      const fk_login_id = localStorage.getItem("advisor_fk_login_id"); // Get advisor token
-      const headers = token ? { "bb-access-token": token } : {}; // Set headers
-
-      const response = await axios.post(
-        `${API_BASE_URL}/v1/cms-advisor/details/v1/cms-advisor/details`,
-        { fk_login_id: fk_login_id },
-        { headers } // Pass headers
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (customer) =>
+          customer.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          customer.mobile_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          customer.customer_id?.toLowerCase().includes(searchTerm.toLowerCase())
       );
-
-      console.log("Response:", response.data);
-
-      if (response.data.result.customerList) {
-        setCustomerList(response.data.result.customerList);
-      } else {
-        setCustomerList([]);
-        setError("No customers found");
-      }
-    } catch (err) {
-      console.error("Error fetching data:", err);
-      setError("Failed to fetch data");
     }
 
-    setLoading(false);
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(
+        (customer) => customer.subscription === (filterStatus === 'active')
+      );
+    }
+
+    setFilteredCustomers(filtered);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
   };
 
-  return (
-    <div className="container mt-8">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4 className="text-primary">Customer List</h4>
-      </div>
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Box sx={{ mb: 3 }}>
+          <Skeleton variant="text" width={200} height={40} />
+        </Box>
+        {[...Array(5)].map((_, index) => (
+          <Skeleton key={index} variant="rectangular" height={60} sx={{ mb: 1 }} />
+        ))}
+      </Container>
+    );
+  }
 
-      {loading ? (
-        <div className="alert alert-info text-center">Loading...</div>
-      ) : error ? (
-        <div className="alert alert-danger text-center">{error}</div>
-      ) : customerList.length > 0 ? (
-        <div className="table-responsive">
-          <table className="table table-striped table-hover">
-            <thead className="thead-dark">
-              <tr>
-                <th>S.No</th>
-                <th>Email</th>
-                <th>Mobile</th>
-                <th>Customer ID</th>
-                <th>Logged Date</th>
-                <th>Subscription</th>
-              </tr>
-            </thead>
-            <tbody>
-              {customerList.map((customer, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{customer.email}</td>
-                  <td>{customer.mobile_number}</td>
-                  <td>{customer.customer_id}</td>
-                  <td>{formatDate(customer.logged_date_time)}</td>
-                  <td>
-                    <span
-                      className={`badge ${
-                        customer.subscription ? "bg-success" : "bg-danger"
-                      }`}
-                    >
-                      {customer.subscription ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="alert alert-warning text-center">No customers found.</div>
-      )}
-    </div>
+  return (
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Typography variant="h4" color="primary" fontWeight="bold">
+          Customer List
+        </Typography>
+      </Box>
+
+      <Paper elevation={0} sx={{ p: 2, mb: 4 }}>
+        <Box display="flex" gap={2} mb={3}>
+          <TextField
+            placeholder="Search customers..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{ flexGrow: 1 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+            size="small"
+          />
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              label="Status"
+            >
+              <MenuItem value="all">All Status</MenuItem>
+              <MenuItem value="active">Active</MenuItem>
+              <MenuItem value="inactive">Inactive</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
+        {filteredCustomers.length > 0 ? (
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Mobile</TableCell>
+                  <TableCell>Customer ID</TableCell>
+                  <TableCell>Logged Date</TableCell>
+                  <TableCell>Subscription</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredCustomers
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((customer, index) => (
+                    <TableRow key={index} hover>
+                      <TableCell>{customer.email}</TableCell>
+                      <TableCell>{customer.mobile_number}</TableCell>
+                      <TableCell>{customer.customer_id}</TableCell>
+                      <TableCell>{formatDate(customer.logged_date_time)}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={customer.subscription ? 'Active' : 'Inactive'}
+                          color={customer.subscription ? 'success' : 'error'}
+                          size="small"
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={filteredCustomers.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </TableContainer>
+        ) : (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            No customers found.
+          </Alert>
+        )}
+      </Paper>
+    </Container>
   );
 };
 
-export default AdvisorCustomer;
+export default CustomerList;

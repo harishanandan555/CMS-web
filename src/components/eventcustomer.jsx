@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Card, Button, Container, Row, Col, Modal, Table } from "react-bootstrap";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaStar} from "react-icons/fa";
 import moment from "moment";
 import API_BASE_URL from "../constants/constants";
 const EventListPage = () => {
   const location = useLocation();
   const { events = [] } = location.state || {}; // Get event list
+  console.log("Events from location.state:", events);
+   
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [favorites, setFavorites] = useState({});
@@ -47,7 +49,7 @@ const EventListPage = () => {
           <Col key={event.id} xs={12} md={6} lg={6} className="mb-3">
             <Card className="shadow-sm position-relative">
               {/* Favorite Heart Icon */}
-              <FaHeart
+              <FaStar
                 className="position-absolute"
                 onClick={() => setFavorites((prev) => ({ ...prev, [event.id]: !prev[event.id] }))}
                 style={{
@@ -116,11 +118,15 @@ const EventListPage = () => {
                 </p>
 
                 <p className="mb-2" style={{ fontSize: "12px" }}>
-                  📝 {event.eventType || "N/A"}
+                  📝 {event.campaign_type || "N/A"}
+                </p>
+
+                <p className="mb-2" style={{ fontSize: "12px" }}>
+                💱 {event.commissionRate || "N/A"}%
                 </p>
 
                 {/* People Joined Section - Clickable */}
-                <div
+                {/* <div
                   className="d-flex align-items-center mt-2"
                   style={{
                     cursor: "pointer",
@@ -135,7 +141,7 @@ const EventListPage = () => {
                   }}
                 >
                   {/* Profile Image Stack */}
-                  <div style={{ display: "flex", alignItems: "center" }}>
+                  {/* <div style={{ display: "flex", alignItems: "center" }}>
                     {event.customers.slice(0, 5).map((customer, index) => (
                       <img
                         key={index}
@@ -157,7 +163,7 @@ const EventListPage = () => {
                   </div>
 
                   {/* Clickable Text with Underline */}
-                  <span
+                  {/* <span
                     style={{
                       fontSize: "14px",
                       marginLeft: "8px",
@@ -172,7 +178,7 @@ const EventListPage = () => {
                   >
                     <span style={{ color: "#f57c00" }}>{event.customers.length}K</span> People are Joined
                   </span>
-                </div>
+                </div>  */}
               </Card.Body>
 
 

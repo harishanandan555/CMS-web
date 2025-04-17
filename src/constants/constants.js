@@ -19,6 +19,8 @@
 // export const ERROR_MSG_UNAUTHORIZED = 'You are not authorized to perform this action.';
 // export const ERROR_MSG_NOT_FOUND = 'Requested resource not found.';
 
-const API_BASE_URL = "https://bullbox-api-kkq0.onrender.com";
+// const API_BASE_URL = "https://bullbox-api-kkq0.onrender.com";
+
+const API_BASE_URL="http://localhost:1337";
 
 export default API_BASE_URL;

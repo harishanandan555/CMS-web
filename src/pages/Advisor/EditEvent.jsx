@@ -75,7 +75,7 @@ function EditEvent() {
 
     console.log("Updated API Request Body:", requestBody);
 
-    fetch(`${API_BASE_URL}/v1/cms-advisor/edit/event`, {
+    fetch(`${API_BASE_URL}/v1/cms/edit/event`, {
       method: "POST",
       headers: {
         "bb-access-token": token,

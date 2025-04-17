@@ -10,6 +10,8 @@ const SignInLayer = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [institutionName, setInstitutionName] = useState("");
+
   const [role, setRole] = useState(""); // Default role
   const navigate = useNavigate();
 
@@ -21,48 +23,84 @@ const SignInLayer = () => {
     }
   }, []);
 
+
+
+  const isStrongPassword = (pwd) => {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
+    return passwordRegex.test(pwd);
+  };
+
+
   const handleSignIn = async (e) => {
     e.preventDefault();
     try {
+
+      if (!isStrongPassword(password)) {
+        alert("Password must be at least 8 characters long, include at least one uppercase letter, one digit, and one special character.");
+        return;
+      }
+
       const response = await axios.post(`${API_BASE_URL}/v1/superadmin/cms/login`, {
         login_email: email,
         password,
         login_role: role,
       });
-  
+
       console.log("Login response:", response.data);
-  
-      if (response.data.code === "000") {
-        const { token, role, fk_login_id } = response.data;
-  
-        if (token) {
+
+      if (response.data) {
+        const { token, role, fk_login_id, distributorARN } = response.data;
+
+        if (role === "superadmin" && fk_login_id && token) {
+          localStorage.setItem('superadmin_user login Id', fk_login_id)
           localStorage.setItem("user_token", token);
+          localStorage.setItem('user_token', token);
         }
-  
+
+        if (role === "amc" && fk_login_id && token) {
+          localStorage.setItem('amc_ user login Id', fk_login_id)
+          localStorage.setItem("amc_user_token", token);
+          localStorage.setItem('user_token', token);
+        }
+
+        if(role=== "distributor"){
+          localStorage.setItem('distributor_ user login Id', fk_login_id)
+          localStorage.setItem("distributor_user_token", token);
+          localStorage.setItem("ARN Number", distributorARN
+          )
+          localStorage.setItem('user_token', token);
+        }
         if (rememberMe) {
           localStorage.setItem("rememberedEmail", email);
         } else {
           localStorage.removeItem("rememberedEmail");
         }
-  
+
         // Store fk_login_id if the role is advisor
         if (role === "advisor" && fk_login_id && token) {
           localStorage.setItem("advisor_fk_login_id", fk_login_id);
           localStorage.setItem("advisor_token", token);
+          localStorage.setItem('user_token', token);
         }
-  
+
         // Log all localStorage items
-        console.log("Current localStorage items:");
+        console.log("🗂️ Current localStorage items:");
         Object.keys(localStorage).forEach((key) => {
           console.log(`${key}:`, localStorage.getItem(key));
         });
-  
+
         // Navigate based on role
-        if (role === "advisor" || role === "distributor") {
+        // Navigate based on role
+        if (role === "advisor" ) {
           navigate("/index-2");
+        }else if (role === "distributor" ) {
+            navigate("/index-4");
+        } else if (role === "amc") {
+          navigate("/index-3");
         } else {
           navigate("/index-1");
         }
+
       } else {
         console.error("Login failed: Invalid credentials or response code not 200");
       }
@@ -70,9 +108,9 @@ const SignInLayer = () => {
       console.error("Login error:", error.response?.data || error.message);
     }
   };
-  
-  
-  
+
+
+
   const handleSignUp = async (e) => {
     e.preventDefault();
 
@@ -176,36 +214,40 @@ const SignInLayer = () => {
               </div>
             )}
 
-<div className="position-relative mb-20">
-  <div className="icon-field">
-    <span className="icon top-50 translate-middle-y">
-      <Icon icon="mdi:account-box-outline" />
-    </span>
-    <select
-      className="form-control h-56-px bg-neutral-50 radius-12"
-      value={role}
-      onChange={(e) => setRole(e.target.value)}
-      required
-    >
-      <option value="" disabled selected>
-        Select Role
-      </option>
-      {isSignUp ? (
-        <>
-          <option value="advisor">Advisor</option>
-          <option value="distributor">Distributor</option>
-        </>
-      ) : (
-        <>
-          <option value="superadmin">Superadmin</option>
-          <option value="admin">Admin</option>
-          <option value="advisor">Advisor</option>
-          <option value="distributor">Distributor</option>
-        </>
-      )}
-    </select>
-  </div>
-</div>
+            <div className="position-relative mb-20">
+              <div className="icon-field">
+                <span className="icon top-50 translate-middle-y">
+                  <Icon icon="mdi:account-box-outline" />
+                </span>
+                <select
+                  className="form-control h-56-px bg-neutral-50 radius-12"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                >
+                  <option value="" disabled>
+                    Select Role
+                  </option>
+                  {isSignUp ? (
+                    <>
+                      <option value="advisor">Advisor</option>
+                      <option value="distributor">Distributor</option>
+                      <option value="AMC">AMC</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="superadmin">Superadmin</option>
+                      <option value="admin">Admin</option>
+                      <option value="advisor">Advisor</option>
+                      <option value="distributor">Distributor</option>
+                      <option value="AMC">AMC</option>
+                    </>
+                  )}
+                </select>
+              </div>
+            </div>
+
+
 
 
 

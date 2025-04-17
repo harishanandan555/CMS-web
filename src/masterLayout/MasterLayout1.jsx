@@ -27,7 +27,7 @@ const MasterLayout1 = ({ children }) => {
       const headers = token ? { "bb-access-token": token } : {}; // Set headers
 
       const response = await axios.post(
-        `${API_BASE_URL}/v1/cms-advisor/details`,
+        `${API_BASE_URL}/v1/cms/details`,
         { fk_login_id: fk_login_id },
         { headers } // Pass headers
       );

@@ -69,7 +69,7 @@ const [snackbarSeverity, setSnackbarSeverity] = useState("success");
       };
 
       const response = await axios.post(
-        `${API_BASE_URL}/v1/cms-advisor/details`,
+        `${API_BASE_URL}/v1/cms/details`,
         { fk_login_id },
         config
       );
@@ -176,7 +176,7 @@ const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/v1/cms-advisor/delete/event`, {
+      const response = await fetch(`${API_BASE_URL}/v1/cms/delete/event`, {
         method: "POST",
         headers: {
           "bb-access-token": token,
