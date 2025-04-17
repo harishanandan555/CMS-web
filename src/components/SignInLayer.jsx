@@ -54,13 +54,13 @@ const SignInLayer = () => {
         if (role === "superadmin" && fk_login_id && token) {
           localStorage.setItem('superadmin_user login Id', fk_login_id)
           localStorage.setItem("user_token", token);
-          localStorage.setItem('user_token', token);
+          localStorage.setItem('user_role', role);
         }
 
         if (role === "amc" && fk_login_id && token) {
           localStorage.setItem('amc_ user login Id', fk_login_id)
           localStorage.setItem("amc_user_token", token);
-          localStorage.setItem('user_token', token);
+          localStorage.setItem('user_role', role);
         }
 
         if(role=== "distributor"){
@@ -68,7 +68,7 @@ const SignInLayer = () => {
           localStorage.setItem("distributor_user_token", token);
           localStorage.setItem("ARN Number", distributorARN
           )
-          localStorage.setItem('user_token', token);
+          localStorage.setItem('user_role', role);
         }
         if (rememberMe) {
           localStorage.setItem("rememberedEmail", email);
@@ -80,7 +80,7 @@ const SignInLayer = () => {
         if (role === "advisor" && fk_login_id && token) {
           localStorage.setItem("advisor_fk_login_id", fk_login_id);
           localStorage.setItem("advisor_token", token);
-          localStorage.setItem('user_token', token);
+          localStorage.setItem('user_role', role);
         }
 
         // Log all localStorage items
